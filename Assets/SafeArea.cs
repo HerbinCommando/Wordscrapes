@@ -4,20 +4,32 @@ public class SafeArea : MonoBehaviour
 {
     public RectTransform rectTransform;
 
-    void Start()
+    private Rect lastSafeArea = new Rect(0, 0, 0, 0);
+
+    void Awake()
     {
-        if (Screen.safeArea != Rect.zero)
+        Refresh();
+    }
+
+    void Update()
+    {
+        Refresh();
+    }
+
+    void Refresh()
+    {
+        Rect safeArea = Screen.safeArea;
+
+        if (safeArea != lastSafeArea)
         {
-            Rect safeArea = Screen.safeArea;
+            lastSafeArea = safeArea;
+
             Vector2 anchorMin = safeArea.position;
             Vector2 anchorMax = safeArea.position + safeArea.size;
-
-            // Convert anchor coordinates to canvas space
             anchorMin.x /= Screen.width;
             anchorMin.y /= Screen.height;
             anchorMax.x /= Screen.width;
             anchorMax.y /= Screen.height;
-
             rectTransform.anchorMin = anchorMin;
             rectTransform.anchorMax = anchorMax;
         }
