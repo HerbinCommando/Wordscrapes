@@ -112,7 +112,6 @@ public class WordScrapes : MonoBehaviour
         // Generate Solution
         List<string> filteredStrings = Dictionary.lines.Where(s => s.Length == Config.WordLengthMax).ToList();
         string pickedWord = filteredStrings[UnityEngine.Random.Range(0, filteredStrings.Count)];
-        pickedWord = "MORAYS";
         List<string> permutations = GeneratePermutations(pickedWord);
         permutations = permutations.Distinct().ToList();
 
