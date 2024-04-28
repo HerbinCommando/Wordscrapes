@@ -8,6 +8,8 @@ public static class Config
     public static bool LogSolutionWords = false;
 
     public static int ControlRadiusPx = 275;
+    public static int ControlRadiusPxMax = 500;
+    public static int ControlRadiusPxMin = 200;
     public static bool GameTimed = true;
     public static int GameTimeSeconds = 60;
     public static int GameTimeSecondsMax = 300;
@@ -19,6 +21,7 @@ public static class Config
 
     public static void Load()
     {
+        ControlRadiusPx = PlayerPrefs.GetInt(nameof(ControlRadiusPx), 275);
         GameTimed = PlayerPrefs.GetInt(nameof(GameTimed), 1) == 1;
         GameTimeSeconds = PlayerPrefs.GetInt(nameof(GameTimeSeconds), 60);
         ShowSolutions = PlayerPrefs.GetInt(nameof(ShowSolutions), 0) == 1;
@@ -28,6 +31,7 @@ public static class Config
 
     public static void Save()
     {
+        PlayerPrefs.SetInt(nameof(ControlRadiusPx), ControlRadiusPx);
         PlayerPrefs.SetInt(nameof(GameTimed), GameTimed ? 1 : 0);
         PlayerPrefs.SetInt(nameof(GameTimeSeconds), GameTimeSeconds);
         PlayerPrefs.SetInt(nameof(ShowSolutions), ShowSolutions ? 1 : 0);

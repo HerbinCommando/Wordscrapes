@@ -35,15 +35,15 @@ public class WordScrapes : MonoBehaviour
     private List<string> wordHits = new List<string>();
     private List<string> wordSolutions = new List<string>();
 
-    private void AppendCurrentString(UIChar touchChar)
+    private void AppendCurrentString(UIChar uiChar)
     {
-        if (touchChar.Selected)
+        if (uiChar.Selected)
             return;
 
-        currentString += touchChar.Character;
+        currentString += uiChar.Character;
 
-        uiCharsSelected.Add(touchChar.transform as RectTransform);
-        touchChar.SetState(UIChar.State.Selected);
+        uiCharsSelected.Add(uiChar.transform as RectTransform);
+        uiChar.SetState(UIChar.State.Selected);
 
         if (uiCharsSelected.Count > 1)
             MakeUILine(uiCharsSelected[uiCharsSelected.Count - 2].transform as RectTransform, uiCharsSelected[uiCharsSelected.Count - 1].transform as RectTransform);
@@ -134,21 +134,21 @@ public class WordScrapes : MonoBehaviour
 
         for (int i = 0; i < Config.WordLengthMax; ++i)
         {
-            GameObject touchCharGO = Instantiate(prefabUIChar);
-            UIChar touchChar = touchCharGO.GetComponent<UIChar>();
-            touchChar.textChar.text = pickedWord[i].ToString();
+            GameObject uiCharGO = Instantiate(prefabUIChar);
+            UIChar uiChar = uiCharGO.GetComponent<UIChar>();
+            uiChar.textChar.text = pickedWord[i].ToString();
 
-            touchChar.onPointerDown += OnPointerDown;
-            touchChar.onPointerUp += OnPointerUp;
-            touchChar.onPointerEnter += OnPointerEnter;
+            uiChar.onPointerDown += OnPointerDown;
+            uiChar.onPointerUp += OnPointerUp;
+            uiChar.onPointerEnter += OnPointerEnter;
 
-            touchChar.transform.SetParent(rectUIChars);
-            uiChars.Add(touchChar);
+            uiChar.transform.SetParent(rectUIChars);
+            uiChars.Add(uiChar);
 
             float angle = i * (360f / Config.WordLengthMax) * Mathf.Deg2Rad;
             float x = Mathf.Cos(angle + 45) * Config.ControlRadiusPx;
             float y = Mathf.Sin(angle + 45) * Config.ControlRadiusPx;
-            (touchChar.transform as RectTransform).anchoredPosition = new Vector2(x, y);
+            (uiChar.transform as RectTransform).anchoredPosition = new Vector2(x, y);
         }
 
         LayoutRebuilder.ForceRebuildLayoutImmediate(rectUIWords);
@@ -321,29 +321,29 @@ public class WordScrapes : MonoBehaviour
             uiChars[i].textChar.text = characters[i].ToString();
     }
 
-    public void OnPointerDown(UIChar touchChar)
+    public void OnPointerDown(UIChar uiChar)
     {
-        AppendCurrentString(touchChar);
+        AppendCurrentString(uiChar);
 
         if (Config.LogPointerEvents)
-            Debug.Log($"OnPointerDown {touchChar.Character}");
+            Debug.Log($"OnPointerDown {uiChar.Character}");
     }
 
-    public void OnPointerUp(UIChar touchChar)
+    public void OnPointerUp(UIChar uiChar)
     {
         CheckCurrentString();
 
         if (Config.LogPointerEvents)
-            Debug.Log($"OnPointerUp {touchChar.Character}");
+            Debug.Log($"OnPointerUp {uiChar.Character}");
     }
 
-    public void OnPointerEnter(UIChar touchChar)
+    public void OnPointerEnter(UIChar uiChar)
     {
-        if (touchChar.Selected && touchChar.gameObject == uiCharsSelected[uiCharsSelected.Count - 1].gameObject)
+        if (uiChar.Selected && uiChar.gameObject == uiCharsSelected[uiCharsSelected.Count - 1].gameObject)
         {
             currentString = currentString.Substring(0, currentString.Length - 1);
                 
-            touchChar.SetState(UIChar.State.Default);
+            uiChar.SetState(UIChar.State.Default);
             uiCharsSelected.RemoveAt(uiCharsSelected.Count - 1);
 
             if (uiLines.Count > 0)
@@ -357,11 +357,22 @@ public class WordScrapes : MonoBehaviour
         }
         else
         {
-            AppendCurrentString(touchChar);
+            AppendCurrentString(uiChar);
         }
 
         if (Config.LogPointerEvents)
-            Debug.Log($"OnPointerEnter {touchChar.Character}");
+            Debug.Log($"OnPointerEnter {uiChar.Character}");
+    }
+
+    public void SetControlRadius()
+    {
+        for (int i = 0; i < uiChars.Count; ++i)
+        {
+            float angle = i * (360f / Config.WordLengthMax) * Mathf.Deg2Rad;
+            float x = Mathf.Cos(angle + 45) * Config.ControlRadiusPx;
+            float y = Mathf.Sin(angle + 45) * Config.ControlRadiusPx;
+            (uiChars[i].transform as RectTransform).anchoredPosition = new Vector2(x, y);
+        }
     }
 
     public void ScreenOnPointerUp()

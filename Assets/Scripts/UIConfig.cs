@@ -4,8 +4,10 @@ using UnityEngine.UI;
 
 public class UIConfig : MonoBehaviour
 {
+    public Slider sliderControlRadius;
     public Slider sliderGameTime;
     public Slider sliderWordLength;
+    public TextMeshProUGUI textControlRadiusPx;
     public TextMeshProUGUI textGameTimeSeconds;
     public TextMeshProUGUI textWordLengthMax;
     public Toggle toggleGameTimed;
@@ -17,6 +19,12 @@ public class UIConfig : MonoBehaviour
     {
         Config.Save();
         gameObject.SetActive(false);
+    }
+
+    public void SetControlRadius(int _)
+    {
+        Config.ControlRadiusPx = (int)sliderControlRadius.value;
+        textControlRadiusPx.text = $"Control Radius: {Config.ControlRadiusPx}px";
     }
 
     public void SetGameTime(int _)
@@ -55,12 +63,16 @@ public class UIConfig : MonoBehaviour
 
     private void Start()
     {
+        sliderControlRadius.maxValue = Config.ControlRadiusPxMax;
+        sliderControlRadius.minValue = Config.ControlRadiusPxMin;
+        sliderControlRadius.value = Config.ControlRadiusPx;
         sliderWordLength.maxValue = 7;
         sliderWordLength.minValue = Config.WordLengthMin;
         sliderWordLength.value = Config.WordLengthMax;
         sliderGameTime.maxValue = Config.GameTimeSecondsMax;
         sliderGameTime.minValue = Config.GameTimeSecondsMin;
         sliderGameTime.value = Config.GameTimeSeconds;
+        textControlRadiusPx.text = $"Control Radius: {Config.ControlRadiusPx}px";
         textGameTimeSeconds.text = $"Game Time: {Config.GameTimeSeconds}s";
         textWordLengthMax.text = $"Word Length: {Config.WordLengthMax}";
         toggleGameTimed.isOn = Config.GameTimed;
