@@ -5,28 +5,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// x Create a Dictionary file
-// x Load dictionary on start with max five letter words
-// x Pick a five letter word from dictionary
-// x Generate a solution set with all 3, 4, and 5 letter permutations of the picked word
-// x Fill the UI with the solution set.
-// x Create TouchChar class
-// x Create TouchChar handlers
-// x Create WordScrapes TouchChar handler
-// x Implement 'undrag' behaviour to unselect the last selected letter if letter is selected and user does pointer exit -> pointer enter -> pointer exit again.
-// - Prevent multitouch, think about if it could be useful (probably not...)
-// x I need a touch up handler on the entire game board in case the player releases their finger while not on a letter
-// x OnPointerUp determine if word is unused and exists in dictionary. If so use existing word then update ui
-// x Support words of any length above five
-// x Vertical and Horizontal layouts, auto switch layout on device rotate
-// x Fix permutation generation
-// x Native iOS and Android build and test
-// x Implement and track Stats
-// x UI lines between TouchChars
-// x Expose Config to UI
-// - Polish UI for notch, camera, etc.
-// - Refactor permutation generation into stack. support permutations of greater than 7 letters
-
 public class WordScrapes : MonoBehaviour
 {
     public GameObject prefabUIChar;
@@ -70,7 +48,7 @@ public class WordScrapes : MonoBehaviour
         if (uiCharsSelected.Count > 1)
             MakeUILine(uiCharsSelected[uiCharsSelected.Count - 2].transform as RectTransform, uiCharsSelected[uiCharsSelected.Count - 1].transform as RectTransform);
 
-        if (wordSolutions.Contains(currentString) && !wordHits.Contains(currentString))
+        if (Config.VibrateOnHighlight && wordSolutions.Contains(currentString) && !wordHits.Contains(currentString))
             Handheld.Vibrate();
     }
 
@@ -82,6 +60,9 @@ public class WordScrapes : MonoBehaviour
             {
                 wordHits.Add(currentString);
                 sw.SetState(UIWord.State.Hit);
+
+                if (!Config.VibrateOnHighlight)
+                    Handheld.Vibrate();
 
                 if (wordHits.Count == wordSolutions.Count)
                     GameOver();
@@ -131,6 +112,7 @@ public class WordScrapes : MonoBehaviour
         // Generate Solution
         List<string> filteredStrings = Dictionary.lines.Where(s => s.Length == Config.WordLengthMax).ToList();
         string pickedWord = filteredStrings[UnityEngine.Random.Range(0, filteredStrings.Count)];
+        pickedWord = "MORAYS";
         List<string> permutations = GeneratePermutations(pickedWord);
         permutations = permutations.Distinct().ToList();
 

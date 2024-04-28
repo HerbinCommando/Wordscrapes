@@ -10,6 +10,8 @@ public class UIConfig : MonoBehaviour
     public TextMeshProUGUI textWordLengthMax;
     public Toggle toggleGameTimed;
     public Toggle toggleShowSolutions;
+    public Toggle toggleVibrateOnHighlight;
+    public Toggle toggleVibrateOnSubmit;
 
     public void OnClickClose()
     {
@@ -33,6 +35,18 @@ public class UIConfig : MonoBehaviour
         Config.ShowSolutions = toggleShowSolutions.isOn;
     }
 
+    public void SetVibrateOnHighlight(bool _)
+    {
+        Config.VibrateOnHighlight = toggleVibrateOnHighlight.isOn;
+        toggleVibrateOnSubmit.isOn = !toggleVibrateOnHighlight.isOn;
+    }
+
+    public void SetVibrateOnSubmit(bool _)
+    {
+        Config.VibrateOnHighlight = !toggleVibrateOnSubmit.isOn;
+        toggleVibrateOnHighlight.isOn = !toggleVibrateOnSubmit.isOn;
+    }
+
     public void SetWordLengthMax(int _)
     {
         Config.WordLengthMax = (int)sliderWordLength.value;
@@ -51,5 +65,7 @@ public class UIConfig : MonoBehaviour
         textWordLengthMax.text = $"Word Length: {Config.WordLengthMax}";
         toggleGameTimed.isOn = Config.GameTimed;
         toggleShowSolutions.isOn = Config.ShowSolutions;
+        toggleVibrateOnHighlight.isOn = Config.VibrateOnHighlight;
+        toggleVibrateOnSubmit.isOn = !Config.VibrateOnHighlight;
     }
 }
