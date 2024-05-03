@@ -24,13 +24,13 @@ public class UIConfig : MonoBehaviour
     public void SetControlRadius(int _)
     {
         Config.ControlRadiusPx = (int)sliderControlRadius.value;
-        textControlRadiusPx.text = $"Control Radius: {Config.ControlRadiusPx}px";
+        textControlRadiusPx.text = $"CONTROL RADIUS: {Config.ControlRadiusPx}px";
     }
 
     public void SetGameTime(int _)
     {
         Config.GameTimeSeconds = (int)sliderGameTime.value;
-        textGameTimeSeconds.text = $"Game Time: {Config.GameTimeSeconds}s";
+        textGameTimeSeconds.text = $"GAME TIME: {Config.GameTimeSeconds}s";
     }
 
     public void SetGameTimed(bool _)
@@ -58,7 +58,7 @@ public class UIConfig : MonoBehaviour
     public void SetWordLengthMax(int _)
     {
         Config.WordLengthMax = (int)sliderWordLength.value;
-        textWordLengthMax.text = $"Word Length: {sliderWordLength.value}";
+        textWordLengthMax.text = $"WORD LENGTH: {sliderWordLength.value}";
     }
 
     private void Start()
@@ -72,9 +72,9 @@ public class UIConfig : MonoBehaviour
         sliderGameTime.maxValue = Config.GameTimeSecondsMax;
         sliderGameTime.minValue = Config.GameTimeSecondsMin;
         sliderGameTime.value = Config.GameTimeSeconds;
-        textControlRadiusPx.text = $"Control Radius: {Config.ControlRadiusPx}px";
-        textGameTimeSeconds.text = $"Game Time: {Config.GameTimeSeconds}s";
-        textWordLengthMax.text = $"Word Length: {Config.WordLengthMax}";
+        textControlRadiusPx.text = $"CONTROL RADIUS: {Config.ControlRadiusPx}px";
+        textGameTimeSeconds.text = $"GAME TIME: {Config.GameTimeSeconds}s";
+        textWordLengthMax.text = $"WORD LENGTH: {Config.WordLengthMax}";
         toggleGameTimed.isOn = Config.GameTimed;
         toggleShowSolutions.isOn = Config.ShowSolutions;
         toggleVibrateOnHighlight.isOn = Config.VibrateOnHighlight;

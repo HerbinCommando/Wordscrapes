@@ -11,7 +11,8 @@ public class UIChar : MonoBehaviour
         Selected,
     }
 
-    public Image background;
+    public Image imageButton;
+    public Image imageSelected;
     public TextMeshProUGUI textChar;
 
     public Action<UIChar> onPointerDown;
@@ -47,14 +48,7 @@ public class UIChar : MonoBehaviour
     {
         state = _state;
 
-        switch(_state)
-        {
-            case State.Default:
-                background.color = Color.white;
-                break;
-            case State.Selected:
-                background.color = Color.green;
-                break;
-        }
+        imageButton.gameObject.SetActive(_state == State.Default);
+        imageSelected.gameObject.SetActive(_state == State.Selected);
     }
 }

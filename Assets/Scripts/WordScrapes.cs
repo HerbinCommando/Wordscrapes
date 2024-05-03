@@ -7,6 +7,8 @@ using UnityEngine.UI;
 
 public class WordScrapes : MonoBehaviour
 {
+    public Image imageBackgroundA;
+    public Image imageBackgroundB;
     public GameObject prefabUIChar;
     public GameObject prefabUILine;
     public GameObject prefabUIWord;
@@ -95,6 +97,8 @@ public class WordScrapes : MonoBehaviour
         textCurrentString.text = string.Empty;
         textGameTime.text = Config.GameTimeSeconds.ToString();
 
+        imageBackgroundA.gameObject.SetActive(UnityEngine.Random.value > 0.5f);
+        imageBackgroundB.gameObject.SetActive(!imageBackgroundA.gameObject.activeSelf);
         textGameTime.gameObject.SetActive(Config.GameTimed);
 
         uiLines.Clear();
@@ -258,9 +262,9 @@ public class WordScrapes : MonoBehaviour
 
     private void Start()
     {
+        Config.Load();
         Dictionary.Load();
         Stats.Load();
-        Config.Load();
 
         GameStart();
     }
