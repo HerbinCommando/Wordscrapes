@@ -10,6 +10,9 @@ public static class Config
     public static int ControlRadiusPx = 275;
     public static int ControlRadiusPxMax = 500;
     public static int ControlRadiusPxMin = 200;
+    public static float ControlScale = 1.3f;
+    public static float ControlScaleMax = 2.0f;
+    public static float ControlScaleMin = 0.75f;
     public static bool GameTimed = true;
     public static int GameTimeSeconds = 60;
     public static int GameTimeSecondsMax = 300;
@@ -21,16 +24,18 @@ public static class Config
 
     public static void Load()
     {
-        ControlRadiusPx = PlayerPrefs.GetInt(nameof(ControlRadiusPx), 275);
+        ControlRadiusPx = PlayerPrefs.GetInt(nameof(ControlRadiusPx), ControlRadiusPx);
+        ControlScale = PlayerPrefs.GetFloat(nameof(ControlScale), ControlScale);
         GameTimed = PlayerPrefs.GetInt(nameof(GameTimed), 1) == 1;
-        GameTimeSeconds = PlayerPrefs.GetInt(nameof(GameTimeSeconds), 60);
+        GameTimeSeconds = PlayerPrefs.GetInt(nameof(GameTimeSeconds), GameTimeSeconds);
         ShowSolutions = PlayerPrefs.GetInt(nameof(ShowSolutions), 0) == 1;
         VibrateOnHighlight = PlayerPrefs.GetInt(nameof(VibrateOnHighlight), 0) == 1;
-        WordLengthMax = PlayerPrefs.GetInt(nameof(WordLengthMax), 5);
+        WordLengthMax = PlayerPrefs.GetInt(nameof(WordLengthMax), WordLengthMax);
     }
 
     public static void Save()
     {
+        PlayerPrefs.SetFloat(nameof(ControlScale), ControlScale);
         PlayerPrefs.SetInt(nameof(ControlRadiusPx), ControlRadiusPx);
         PlayerPrefs.SetInt(nameof(GameTimed), GameTimed ? 1 : 0);
         PlayerPrefs.SetInt(nameof(GameTimeSeconds), GameTimeSeconds);

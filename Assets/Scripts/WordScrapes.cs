@@ -379,6 +379,12 @@ public class WordScrapes : MonoBehaviour
         }
     }
 
+    public void SetControlScale()
+    {
+        for (int i = 0; i < uiChars.Count; ++i)
+            (uiChars[i].transform as RectTransform).localScale = new Vector3(Config.ControlScale, Config.ControlScale, Config.ControlScale);
+    }
+
     public void ScreenOnPointerUp()
     {
         CheckCurrentString();
