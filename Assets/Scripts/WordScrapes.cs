@@ -148,7 +148,7 @@ public class WordScrapes : MonoBehaviour
 
             uiChar.transform.SetParent(rectUIChars);
             uiChars.Add(uiChar);
-
+            
             float angle = i * (360f / Config.WordLengthMax) * Mathf.Deg2Rad;
             float x = Mathf.Cos(angle + 45) * Config.ControlRadiusPx;
             float y = Mathf.Sin(angle + 45) * Config.ControlRadiusPx;
@@ -163,6 +163,7 @@ public class WordScrapes : MonoBehaviour
         rectUIWords.sizeDelta = sizeDelta;
 
         OnClickShuffle();
+        SetControlScale();
 
         // Logging
         if (Config.LogSolutionWords || Config.LogPermutations)
