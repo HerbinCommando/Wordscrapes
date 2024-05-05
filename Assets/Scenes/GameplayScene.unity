@@ -8127,7 +8127,7 @@ GameObject:
   - component: {fileID: 1824402593}
   - component: {fileID: 1824402594}
   m_Layer: 5
-  m_Name: SafeArea
+  m_Name: UISafeArea
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
