@@ -4,6 +4,7 @@
 [Bb]uilds/
 [Ll]ibrary/
 /[Ll]ogs/
+[Ss]treaming[Aa]ssets/
 [Uu]ser[Ss]ettings/
 .DS_Store
 .DS_Store?
@@ -13,7 +14,7 @@
 .vs/
 .vsconfig
 .idea/
-*.sln
+/*.sln
 *.csproj
 *.pidb
 *.userprefs
@@ -24,3 +25,4 @@
 /.vscode/
 *~
 *.swp
+[Ss]treaming[Aa]ssets.meta
