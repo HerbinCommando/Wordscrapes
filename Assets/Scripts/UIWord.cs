@@ -6,6 +6,7 @@ public class UIWord : MonoBehaviour
 {
     public enum State
     {
+        Blacklist,
         Default,
         Hit,
         Miss
@@ -13,6 +14,7 @@ public class UIWord : MonoBehaviour
 
     public TextMeshProUGUI textWord;
 
+    [NonSerialized] public Action<UIWord> onClick;
     [NonSerialized] public State state;
     [NonSerialized] public string word;
 
@@ -21,6 +23,7 @@ public class UIWord : MonoBehaviour
     private void Awake()
     {
         Set(string.Empty);
+        SetState(State.Default);
     }
 
     public void Set(string _word)
@@ -38,9 +41,14 @@ public class UIWord : MonoBehaviour
     public void SetState(State _state)
     {
         state = _state;
+        textWord.fontStyle &= ~FontStyles.Strikethrough;
 
-        switch(_state)
+        switch (_state)
         {
+            case State.Blacklist:
+                textWord.color = Color.gray;
+                textWord.fontStyle |= FontStyles.Strikethrough;
+                break;
             case State.Default:
                 textWord.color = Color.white;
                 break;
@@ -53,5 +61,10 @@ public class UIWord : MonoBehaviour
                 textWord.text = word;
                 break;
         }
+    }
+
+    public void OnClick()
+    {
+        onClick?.Invoke(this);
     }
 }

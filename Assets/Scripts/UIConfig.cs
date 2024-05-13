@@ -4,6 +4,9 @@ using UnityEngine.UI;
 
 public class UIConfig : MonoBehaviour
 {
+    public GameObject blacklist;
+    public GameObject prefabUIWord;
+    public RectTransform rectUIWords;
     public Slider sliderControlRadius;
     public Slider sliderControlScale;
     public Slider sliderGameTime;
@@ -11,13 +14,60 @@ public class UIConfig : MonoBehaviour
     public TextMeshProUGUI textControlRadiusPx;
     public TextMeshProUGUI textControlScale;
     public TextMeshProUGUI textGameTimeSeconds;
-    public TextMeshProUGUI textWordLengthMax;
+    public TextMeshProUGUI textWordLength;
     public Toggle toggleGameTimed;
     public Toggle toggleShowSolutions;
     public Toggle toggleVibrateOnHighlight;
     public Toggle toggleVibrateOnSubmit;
 
-    private void Awake()
+    public void OnClickBlacklistClose()
+    {
+        blacklist.SetActive(false);
+        Config.Save();
+
+        for (int i = rectUIWords.childCount - 1; i >= 0; --i)
+            Destroy(rectUIWords.GetChild(i).gameObject);
+    }
+
+    public void OnClickBlacklistOpen()
+    {
+        blacklist.SetActive(true);
+
+        foreach (string word in Config.Blacklist)
+        {
+            GameObject solutionWordGO = Instantiate(prefabUIWord);
+            UIWord solutionWord = solutionWordGO.GetComponent<UIWord>();
+            solutionWord.onClick = OnClickUIWord;
+
+            solutionWord.Set(word);
+            solutionWord.SetState(UIWord.State.Miss);
+            solutionWord.transform.SetParent(rectUIWords);
+        }
+    }
+
+    public void OnClickClose()
+    {
+        gameObject.SetActive(false);
+    }
+
+    public void OnClickUIWord(UIWord uiWord)
+    {
+        if (uiWord.state == UIWord.State.Blacklist)
+        {
+            Config.Blacklist.Add(uiWord.word);
+            uiWord.SetState(UIWord.State.Miss);
+        }
+        else
+        {
+            Config.Blacklist.Remove(uiWord.word);
+            uiWord.SetState(UIWord.State.Blacklist);
+        }
+
+        if (Config.LogPointerEvents)
+            Debug.Log($"OnClickUIWord {uiWord.word}");
+    }
+
+    private void OnEnable()
     {
         sliderControlRadius.maxValue = Config.ControlRadiusPxMax;
         sliderControlRadius.minValue = Config.ControlRadiusPxMin;
@@ -25,26 +75,22 @@ public class UIConfig : MonoBehaviour
         sliderControlScale.maxValue = Config.ControlScaleMax;
         sliderControlScale.minValue = Config.ControlScaleMin;
         sliderControlScale.value = Config.ControlScale;
-        sliderWordLength.maxValue = 6;
+        sliderWordLength.maxValue = Config.WordLengthMax;
         sliderWordLength.minValue = Config.WordLengthMin;
-        sliderWordLength.value = Config.WordLengthMax;
+        sliderWordLength.value = Config.WordLength;
         sliderGameTime.maxValue = Config.GameTimeSecondsMax;
         sliderGameTime.minValue = Config.GameTimeSecondsMin;
         sliderGameTime.value = Config.GameTimeSeconds;
         textControlRadiusPx.text = $"CONTROL RADIUS: {Config.ControlRadiusPx}px";
         textControlScale.text = $"CONTROL SCALE: {Config.ControlScale}";
         textGameTimeSeconds.text = $"GAME TIME: {Config.GameTimeSeconds}s";
-        textWordLengthMax.text = $"WORD LENGTH: {Config.WordLengthMax}";
+        textWordLength.text = $"WORD LENGTH: {Config.WordLength}";
         toggleGameTimed.isOn = Config.GameTimed;
         toggleShowSolutions.isOn = Config.ShowSolutions;
         toggleVibrateOnHighlight.isOn = Config.VibrateOnHighlight;
         toggleVibrateOnSubmit.isOn = !Config.VibrateOnHighlight;
-    }
 
-    public void OnClickClose()
-    {
-        Config.Save();
-        gameObject.SetActive(false);
+        blacklist.SetActive(false);
     }
 
     public void SetControlRadius(int _)
@@ -87,9 +133,9 @@ public class UIConfig : MonoBehaviour
         toggleVibrateOnHighlight.isOn = !toggleVibrateOnSubmit.isOn;
     }
 
-    public void SetWordLengthMax(int _)
+    public void SetWordLength(int _)
     {
-        Config.WordLengthMax = (int)sliderWordLength.value;
-        textWordLengthMax.text = $"WORD LENGTH: {sliderWordLength.value}";
+        Config.WordLength = (int)sliderWordLength.value;
+        textWordLength.text = $"WORD LENGTH: {sliderWordLength.value}";
     }
 }
