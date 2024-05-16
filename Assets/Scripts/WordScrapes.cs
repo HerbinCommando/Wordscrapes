@@ -94,6 +94,23 @@ public class WordScrapes : MonoBehaviour
             tc.SetState(UIChar.State.Default);
     }
 
+    private void DeselectOne(UIChar uiChar)
+    {
+        currentString = currentString.Substring(0, currentString.Length - 1);
+
+        uiChar.SetState(UIChar.State.Default);
+        uiCharsSelected.RemoveAt(uiCharsSelected.Count - 1);
+
+        if (uiLines.Count > 0)
+        {
+            Destroy(uiLines[uiLines.Count - 1]);
+            uiLines.RemoveAt(uiLines.Count - 1);
+        }
+
+        if (wordSolutions.Contains(currentString) && !wordHits.Contains(currentString))
+            Handheld.Vibrate();
+    }
+
     private void GameStart()
     {
         // Cleanup
@@ -131,12 +148,70 @@ public class WordScrapes : MonoBehaviour
         //PermutationGenerator generator = new PermutationGenerator();
         //List<string> permutations = generator.GeneratePermutations(pickedWord);
 
+        /*
         List<string> permutations = GeneratePermutations(pickedWord);
         permutations = permutations.Distinct().ToList();
 
         foreach (string perm in permutations)
             if (Dictionary.lines.Contains(perm) && !Config.Blacklist.Contains(perm))
                 wordSolutions.Add(perm);
+        */
+
+
+
+        ////------------------------------------------------------
+        ///// dict is an array of strings
+        // dict2 is a dictionary where keys are strings from dict and values are 1
+        Dictionary<string, int> dict2 = new Dictionary<string, int>();
+        foreach (var w in Dictionary.lines)
+        {
+            dict2[w] = 1;
+        }
+
+        List<char> c = new List<char>();
+        foreach (char ch in pickedWord)
+        {
+            c.Add(ch);
+        }
+
+        List<(string f, List<char> l)> s = new List<(string f, List<char> l)>();
+        s.Add(("", c.ToList()));
+
+        int maxlen = 0;
+        var start = DateTime.Now;
+
+        int iterations = 0;
+
+        while (s.Count > 0)
+        {
+            var ar = s[s.Count - 1];
+            s.RemoveAt(s.Count - 1);
+
+            string word = ar.f;
+            if (dict2.ContainsKey(word))
+            {
+                if (word.Length > 1 && !wordSolutions.Contains(word))
+                {
+                    wordSolutions.Add(word);
+                }
+            }
+
+            for (int i = 0; i < ar.l.Count; i++)
+            {
+                List<char> newList = new List<char>(ar.l);
+                newList.RemoveAt(i);
+                s.Add((ar.f + ar.l[i], newList));
+            }
+
+            // Perf checking:
+            if (s.Count > maxlen) maxlen = s.Count;
+            iterations++;
+            if (iterations % 1000 == 0)
+            {
+                Console.WriteLine(iterations + " " + wordSolutions.Count + " " + maxlen);
+            }
+        }
+        ////------------------------------------------------------
 
         // Instance Prefabs
         foreach (string word in wordSolutions)
@@ -179,9 +254,11 @@ public class WordScrapes : MonoBehaviour
             foreach (string word in Config.Blacklist)
                 Debug.Log($"Blacklisted {word}");
 
+        /*
         if (Config.LogPermutations)
             foreach (string permutation in permutations)
                 Debug.Log(permutation);
+        */
 
         if (Config.LogSolutionWords)
             foreach (string word in wordSolutions)
@@ -287,16 +364,13 @@ public class WordScrapes : MonoBehaviour
 
         deltaTimeS += Time.deltaTime;
 
-        if (Config.GameTimed && gameTimeS > 0)
+        if (Config.GameTimed && gameTimeS > 0 && deltaTimeS > 1.0f)
         {
-            if (deltaTimeS > 1.0f)
-            {
-                gameTimeS -= Mathf.FloorToInt(deltaTimeS);
-                deltaTimeS = 0f;
+            gameTimeS -= Mathf.FloorToInt(deltaTimeS);
+            deltaTimeS = 0f;
 
-                if (gameTimeS <= 0)
-                    GameOver();
-            }
+            if (gameTimeS <= 0)
+                GameOver();
         }
 
         if (textCurrentString.text != currentString)
@@ -304,6 +378,25 @@ public class WordScrapes : MonoBehaviour
 
         if (textGameTime.text != gameTimeS.ToString())
             textGameTime.text = gameTimeS.ToString();
+
+        foreach (var uiChar in uiChars)
+        {
+            if (!uiChar.Selected && Input.GetKeyDown(uiChar.KeyCode))
+            {
+                OnPointerDown(uiChar);
+                break;
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
+            ScreenOnPointerUp();
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+            Deselect();
+
+        if (Input.GetKeyDown(KeyCode.Delete))
+            if (uiCharsSelected.Count >= 1)
+                DeselectOne(uiCharsSelected[^1].GetComponent<UIChar>());
     }
 
     public void OnClickQuitGame()
@@ -376,26 +469,10 @@ public class WordScrapes : MonoBehaviour
 
     public void OnPointerEnter(UIChar uiChar)
     {
-        if (uiChar.Selected && uiChar.gameObject == uiCharsSelected[uiCharsSelected.Count - 1].gameObject)
-        {
-            currentString = currentString.Substring(0, currentString.Length - 1);
-                
-            uiChar.SetState(UIChar.State.Default);
-            uiCharsSelected.RemoveAt(uiCharsSelected.Count - 1);
-
-            if (uiLines.Count > 0)
-            {
-                Destroy(uiLines[uiLines.Count - 1]);
-                uiLines.RemoveAt(uiLines.Count - 1);
-            }
-
-            if (wordSolutions.Contains(currentString) && !wordHits.Contains(currentString))
-                Handheld.Vibrate();
-        }
+        if (uiChar.Selected && uiChar.gameObject == uiCharsSelected[^1].gameObject)
+            DeselectOne(uiChar);
         else
-        {
             AppendCurrentString(uiChar);
-        }
 
         if (Config.LogPointerEvents)
             Debug.Log($"OnPointerEnter {uiChar.Character}");

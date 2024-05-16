@@ -22,6 +22,7 @@ public class UIChar : MonoBehaviour
     [NonSerialized] public State state;
 
     public string Character => textChar.text;
+    public KeyCode KeyCode => (KeyCode)Enum.Parse(typeof(KeyCode), Character[0].ToString());
     public bool Selected => state == State.Selected;
 
     private void Awake()

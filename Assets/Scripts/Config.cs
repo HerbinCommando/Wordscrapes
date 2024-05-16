@@ -22,7 +22,7 @@ public static class Config
     public static bool ShowSolutions = false;
     public static bool VibrateOnHighlight = false;
     public static int WordLength = 5;
-    public static int WordLengthMax = 7;
+    public static int WordLengthMax = 10;
     public static int WordLengthMin = 3;
 
     public static void Load()
