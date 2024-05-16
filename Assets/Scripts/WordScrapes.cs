@@ -350,6 +350,8 @@ public class WordScrapes : MonoBehaviour
 
     private void Start()
     {
+        return; // NOCHECKIN LE WORD
+        
         Config.Load();
         Dictionary.Load();
         Stats.Load();
