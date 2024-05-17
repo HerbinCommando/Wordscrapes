@@ -75,7 +75,7 @@ public class UIConfig : MonoBehaviour
     public void OnClickBlacklistClose()
     {
         blacklist.SetActive(false);
-        UIConfig.Save();
+        Save();
 
         for (int i = rectUIWords.childCount - 1; i >= 0; --i)
             Destroy(rectUIWords.GetChild(i).gameObject);
@@ -106,16 +106,16 @@ public class UIConfig : MonoBehaviour
     {
         if (uiWord.state == UIWord.State.Blacklist)
         {
-            UIConfig.Blacklist.Add(uiWord.word);
+            Blacklist.Add(uiWord.word);
             uiWord.SetState(UIWord.State.Miss);
         }
         else
         {
-            UIConfig.Blacklist.Remove(uiWord.word);
+            Blacklist.Remove(uiWord.word);
             uiWord.SetState(UIWord.State.Blacklist);
         }
 
-        if (UIConfig.LogPointerEvents)
+        if (LogPointerEvents)
             Debug.Log($"OnClickUIWord {uiWord.word}");
     }
 
@@ -127,73 +127,73 @@ public class UIConfig : MonoBehaviour
 
     private void OnEnable()
     {
-        sliderControlRadius.maxValue = UIConfig.ControlRadiusPxMax;
-        sliderControlRadius.minValue = UIConfig.ControlRadiusPxMin;
-        sliderControlRadius.value = UIConfig.ControlRadiusPx;
-        sliderControlScale.maxValue = UIConfig.ControlScaleMax;
-        sliderControlScale.minValue = UIConfig.ControlScaleMin;
-        sliderControlScale.value = UIConfig.ControlScale;
-        sliderWordLength.maxValue = UIConfig.WordLengthMax;
-        sliderWordLength.minValue = UIConfig.WordLengthMin;
-        sliderWordLength.value = UIConfig.WordLength;
-        sliderGameTime.maxValue = UIConfig.GameTimeSecondsMax;
-        sliderGameTime.minValue = UIConfig.GameTimeSecondsMin;
-        sliderGameTime.value = UIConfig.GameTimeSeconds;
-        textControlRadiusPx.text = $"CONTROL RADIUS: {UIConfig.ControlRadiusPx}px";
-        textControlScale.text = $"CONTROL SCALE: {UIConfig.ControlScale}";
-        textGameTimeSeconds.text = $"GAME TIME: {UIConfig.GameTimeSeconds}s";
-        textWordLength.text = $"WORD LENGTH: {UIConfig.WordLength}";
-        toggleGameTimed.isOn = UIConfig.GameTimed;
-        toggleShowSolutions.isOn = UIConfig.ShowSolutions;
-        toggleVibrateOnHighlight.isOn = UIConfig.VibrateOnHighlight;
-        toggleVibrateOnSubmit.isOn = !UIConfig.VibrateOnHighlight;
+        sliderControlRadius.maxValue = ControlRadiusPxMax;
+        sliderControlRadius.minValue = ControlRadiusPxMin;
+        sliderControlRadius.value = ControlRadiusPx;
+        sliderControlScale.maxValue = ControlScaleMax;
+        sliderControlScale.minValue = ControlScaleMin;
+        sliderControlScale.value = ControlScale;
+        sliderWordLength.maxValue = WordLengthMax;
+        sliderWordLength.minValue = WordLengthMin;
+        sliderWordLength.value = WordLength;
+        sliderGameTime.maxValue = GameTimeSecondsMax;
+        sliderGameTime.minValue = GameTimeSecondsMin;
+        sliderGameTime.value = GameTimeSeconds;
+        textControlRadiusPx.text = $"CONTROL RADIUS: {ControlRadiusPx}px";
+        textControlScale.text = $"CONTROL SCALE: {ControlScale}";
+        textGameTimeSeconds.text = $"GAME TIME: {GameTimeSeconds}s";
+        textWordLength.text = $"WORD LENGTH: {WordLength}";
+        toggleGameTimed.isOn = GameTimed;
+        toggleShowSolutions.isOn = ShowSolutions;
+        toggleVibrateOnHighlight.isOn = VibrateOnHighlight;
+        toggleVibrateOnSubmit.isOn = !VibrateOnHighlight;
 
         blacklist.SetActive(false);
     }
 
     public void SetControlRadius(int _)
     {
-        UIConfig.ControlRadiusPx = (int)sliderControlRadius.value;
-        textControlRadiusPx.text = $"CONTROL RADIUS: {UIConfig.ControlRadiusPx}px";
+        ControlRadiusPx = (int)sliderControlRadius.value;
+        textControlRadiusPx.text = $"CONTROL RADIUS: {ControlRadiusPx}px";
     }
 
     public void SetControlScale(float _)
     {
-        UIConfig.ControlScale = sliderControlScale.value;
-        textControlScale.text = $"CONTROL SCALE: {UIConfig.ControlScale:F2}";
+        ControlScale = sliderControlScale.value;
+        textControlScale.text = $"CONTROL SCALE: {ControlScale:F2}";
     }
 
     public void SetGameTime(int _)
     {
-        UIConfig.GameTimeSeconds = (int)sliderGameTime.value;
-        textGameTimeSeconds.text = $"GAME TIME: {UIConfig.GameTimeSeconds}s";
+        GameTimeSeconds = (int)sliderGameTime.value;
+        textGameTimeSeconds.text = $"GAME TIME: {GameTimeSeconds}s";
     }
 
     public void SetGameTimed(bool _)
     {
-        UIConfig.GameTimed = toggleGameTimed.isOn;
+        GameTimed = toggleGameTimed.isOn;
     }
 
     public void SetShowSolutions(bool _)
     {
-        UIConfig.ShowSolutions = toggleShowSolutions.isOn;
+        ShowSolutions = toggleShowSolutions.isOn;
     }
 
     public void SetVibrateOnHighlight(bool _)
     {
-        UIConfig.VibrateOnHighlight = toggleVibrateOnHighlight.isOn;
+        VibrateOnHighlight = toggleVibrateOnHighlight.isOn;
         toggleVibrateOnSubmit.isOn = !toggleVibrateOnHighlight.isOn;
     }
 
     public void SetVibrateOnSubmit(bool _)
     {
-        UIConfig.VibrateOnHighlight = !toggleVibrateOnSubmit.isOn;
+        VibrateOnHighlight = !toggleVibrateOnSubmit.isOn;
         toggleVibrateOnHighlight.isOn = !toggleVibrateOnSubmit.isOn;
     }
 
     public void SetWordLength(int _)
     {
-        UIConfig.WordLength = (int)sliderWordLength.value;
+        WordLength = (int)sliderWordLength.value;
         textWordLength.text = $"WORD LENGTH: {sliderWordLength.value}";
     }
 }
