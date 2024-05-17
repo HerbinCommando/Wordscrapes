@@ -15,11 +15,11 @@ public static class Dictionary
         {
             string line = fileLines[i].Trim();
 
-            if (line.Length >= Config.WordLengthMin)
+            if (line.Length >= UIConfig.WordLengthMin)
                 lines.Add(line);
         }
 
-        if (Config.LogDictionary)
+        if (UIConfig.LogDictionary)
             foreach (string line in lines)
                 Debug.Log(line);
     }

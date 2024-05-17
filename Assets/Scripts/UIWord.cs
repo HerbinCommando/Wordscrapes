@@ -31,7 +31,7 @@ public class UIWord : MonoBehaviour
         textWord.text = string.Empty;
         word = _word;
 
-        if (Config.ShowSolutions)
+        if (UIConfig.ShowSolutions)
             textWord.text = word;
         else
             for (int i = 0; i < _word.Length; ++i)

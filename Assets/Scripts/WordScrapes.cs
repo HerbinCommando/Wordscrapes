@@ -50,7 +50,7 @@ public class WordScrapes : MonoBehaviour
         if (uiCharsSelected.Count > 1)
             MakeUILine(uiCharsSelected[uiCharsSelected.Count - 2].transform as RectTransform, uiCharsSelected[uiCharsSelected.Count - 1].transform as RectTransform);
 
-        if (Config.VibrateOnHighlight && wordSolutions.Contains(currentString) && !wordHits.Contains(currentString))
+        if (UIConfig.VibrateOnHighlight && wordSolutions.Contains(currentString) && !wordHits.Contains(currentString))
             Handheld.Vibrate();
     }
 
@@ -69,7 +69,7 @@ public class WordScrapes : MonoBehaviour
                 wordHits.Add(currentString);
                 sw.SetState(UIWord.State.Hit);
 
-                if (!Config.VibrateOnHighlight)
+                if (!UIConfig.VibrateOnHighlight)
                     Handheld.Vibrate();
 
                 if (wordHits.Count == wordSolutions.Count)
@@ -116,13 +116,13 @@ public class WordScrapes : MonoBehaviour
         // Cleanup
         currentString = string.Empty;
         deltaTimeS = 0f;
-        gameTimeS = Config.GameTimeSeconds;
+        gameTimeS = UIConfig.GameTimeSeconds;
         textCurrentString.text = string.Empty;
-        textGameTime.text = Config.GameTimeSeconds.ToString();
+        textGameTime.text = UIConfig.GameTimeSeconds.ToString();
 
         imageBackgroundA.gameObject.SetActive(UnityEngine.Random.value > 0.5f);
         imageBackgroundB.gameObject.SetActive(!imageBackgroundA.gameObject.activeSelf);
-        textGameTime.gameObject.SetActive(Config.GameTimed);
+        textGameTime.gameObject.SetActive(UIConfig.GameTimed);
 
         uiLines.Clear();
         wordHits.Clear();
@@ -138,41 +138,19 @@ public class WordScrapes : MonoBehaviour
             Destroy(rectUIChars.GetChild(i).gameObject);
         
         // Generate Solution
-        List<string> filteredStrings = Dictionary.lines.Where(s => s.Length == Config.WordLength).ToList();
+        List<string> filteredStrings = Dictionary.lines.Where(s => s.Length == UIConfig.WordLength).ToList();
         string pickedWord = filteredStrings[UnityEngine.Random.Range(0, filteredStrings.Count)];
 
-        while (Config.Blacklist.Contains(pickedWord))
+        while (UIConfig.Blacklist.Contains(pickedWord))
             pickedWord = filteredStrings[UnityEngine.Random.Range(0, filteredStrings.Count)];
 
-        // Cannot generate 9 letter permutations
-        //PermutationGenerator generator = new PermutationGenerator();
-        //List<string> permutations = generator.GeneratePermutations(pickedWord);
-
-        /*
-        List<string> permutations = GeneratePermutations(pickedWord);
-        permutations = permutations.Distinct().ToList();
-
-        foreach (string perm in permutations)
-            if (Dictionary.lines.Contains(perm) && !Config.Blacklist.Contains(perm))
-                wordSolutions.Add(perm);
-        */
-
-
-
-        ////------------------------------------------------------
-        ///// dict is an array of strings
-        // dict2 is a dictionary where keys are strings from dict and values are 1
         Dictionary<string, int> dict2 = new Dictionary<string, int>();
         foreach (var w in Dictionary.lines)
-        {
             dict2[w] = 1;
-        }
 
         List<char> c = new List<char>();
         foreach (char ch in pickedWord)
-        {
             c.Add(ch);
-        }
 
         List<(string f, List<char> l)> s = new List<(string f, List<char> l)>();
         s.Add(("", c.ToList()));
@@ -189,12 +167,8 @@ public class WordScrapes : MonoBehaviour
 
             string word = ar.f;
             if (dict2.ContainsKey(word))
-            {
                 if (word.Length > 1 && !wordSolutions.Contains(word))
-                {
                     wordSolutions.Add(word);
-                }
-            }
 
             for (int i = 0; i < ar.l.Count; i++)
             {
@@ -207,11 +181,8 @@ public class WordScrapes : MonoBehaviour
             if (s.Count > maxlen) maxlen = s.Count;
             iterations++;
             if (iterations % 1000 == 0)
-            {
                 Console.WriteLine(iterations + " " + wordSolutions.Count + " " + maxlen);
-            }
         }
-        ////------------------------------------------------------
 
         // Instance Prefabs
         foreach (string word in wordSolutions)
@@ -225,9 +196,9 @@ public class WordScrapes : MonoBehaviour
             uiWords.Add(solutionWord);
         }
 
-        float angleStep = 360f / Config.WordLength;
+        float angleStep = 360f / UIConfig.WordLength;
 
-        for (int i = 0; i < Config.WordLength; ++i)
+        for (int i = 0; i < UIConfig.WordLength; ++i)
         {
             GameObject uiCharGO = Instantiate(prefabUIChar);
             UIChar uiChar = uiCharGO.GetComponent<UIChar>();
@@ -247,20 +218,20 @@ public class WordScrapes : MonoBehaviour
         SetControlScale();
 
         // Logging
-        if (Config.LogSolutionWords || Config.LogPermutations)
-            Debug.Log($"Picked {Config.WordLengthMax} letter word: {pickedWord}");
+        if (UIConfig.LogSolutionWords || UIConfig.LogPermutations)
+            Debug.Log($"Picked {UIConfig.WordLengthMax} letter word: {pickedWord}");
 
-        if (Config.LogDictionary || Config.LogSolutionWords)
-            foreach (string word in Config.Blacklist)
+        if (UIConfig.LogDictionary || UIConfig.LogSolutionWords)
+            foreach (string word in UIConfig.Blacklist)
                 Debug.Log($"Blacklisted {word}");
 
         /*
-        if (Config.LogPermutations)
+        if (UIConfig.LogPermutations)
             foreach (string permutation in permutations)
                 Debug.Log(permutation);
         */
 
-        if (Config.LogSolutionWords)
+        if (UIConfig.LogSolutionWords)
             foreach (string word in wordSolutions)
                 Debug.Log(word);
     }
@@ -280,7 +251,7 @@ public class WordScrapes : MonoBehaviour
         List<string> permutations = new List<string>();
         bool[] used = new bool[word.Length]; // Array to track used letters
 
-        for (int length = Config.WordLengthMin; length <= Config.WordLengthMax; length++)
+        for (int length = UIConfig.WordLengthMin; length <= UIConfig.WordLengthMax; length++)
             GeneratePermutationsRecursive(word, used, "", permutations, length);
 
         return permutations;
@@ -350,9 +321,7 @@ public class WordScrapes : MonoBehaviour
 
     private void Start()
     {
-        return; // NOCHECKIN LE WORD
-        
-        Config.Load();
+        UIConfig.Load();
         Dictionary.Load();
         Stats.Load();
 
@@ -366,7 +335,7 @@ public class WordScrapes : MonoBehaviour
 
         deltaTimeS += Time.deltaTime;
 
-        if (Config.GameTimed && gameTimeS > 0 && deltaTimeS > 1.0f)
+        if (UIConfig.GameTimed && gameTimeS > 0 && deltaTimeS > 1.0f)
         {
             gameTimeS -= Mathf.FloorToInt(deltaTimeS);
             deltaTimeS = 0f;
@@ -403,14 +372,14 @@ public class WordScrapes : MonoBehaviour
 
     public void OnClickQuitGame()
     {
-        Config.Save();
+        UIConfig.Save();
         uiConfig.SetActive(false);
         GameOver();
     }
 
     public void OnClickNewGame()
     {
-        Config.Save();
+        UIConfig.Save();
         GameStart();
         uiGameOver.SetActive(false);
     }
@@ -440,16 +409,16 @@ public class WordScrapes : MonoBehaviour
     {
         if (uiWord.state == UIWord.State.Blacklist)
         {
-            Config.Blacklist.Remove(uiWord.word);
+            UIConfig.Blacklist.Remove(uiWord.word);
             uiWord.SetState(wordHits.Contains(uiWord.word) ? UIWord.State.Hit : UIWord.State.Miss);
         }
         else if (uiWord.state != UIWord.State.Default)
         {
-            Config.Blacklist.Add(uiWord.word);
+            UIConfig.Blacklist.Add(uiWord.word);
             uiWord.SetState(UIWord.State.Blacklist);
         }
 
-        if (Config.LogPointerEvents)
+        if (UIConfig.LogPointerEvents)
             Debug.Log($"OnClickUIWord {uiWord.word}");
     }
 
@@ -457,7 +426,7 @@ public class WordScrapes : MonoBehaviour
     {
         AppendCurrentString(uiChar);
 
-        if (Config.LogPointerEvents)
+        if (UIConfig.LogPointerEvents)
             Debug.Log($"OnPointerDown {uiChar.Character}");
     }
 
@@ -465,7 +434,7 @@ public class WordScrapes : MonoBehaviour
     {
         CheckCurrentString();
 
-        if (Config.LogPointerEvents)
+        if (UIConfig.LogPointerEvents)
             Debug.Log($"OnPointerUp {uiChar.Character}");
     }
 
@@ -476,7 +445,7 @@ public class WordScrapes : MonoBehaviour
         else
             AppendCurrentString(uiChar);
 
-        if (Config.LogPointerEvents)
+        if (UIConfig.LogPointerEvents)
             Debug.Log($"OnPointerEnter {uiChar.Character}");
     }
 
@@ -484,7 +453,7 @@ public class WordScrapes : MonoBehaviour
     {
         CheckCurrentString();
 
-        if (Config.LogPointerEvents)
+        if (UIConfig.LogPointerEvents)
             Debug.Log($"ScreenOnPointerUp");
     }
 
@@ -492,9 +461,9 @@ public class WordScrapes : MonoBehaviour
     {
         for (int i = 0; i < uiChars.Count; ++i)
         {
-            float angle = i * (360f / Config.WordLength) * Mathf.Deg2Rad;
-            float x = Mathf.Cos(angle + 45) * Config.ControlRadiusPx;
-            float y = Mathf.Sin(angle + 45) * Config.ControlRadiusPx;
+            float angle = i * (360f / UIConfig.WordLength) * Mathf.Deg2Rad;
+            float x = Mathf.Cos(angle + 45) * UIConfig.ControlRadiusPx;
+            float y = Mathf.Sin(angle + 45) * UIConfig.ControlRadiusPx;
             (uiChars[i].transform as RectTransform).anchoredPosition = new Vector2(x, y);
         }
     }
@@ -502,6 +471,6 @@ public class WordScrapes : MonoBehaviour
     public void SetControlScale()
     {
         for (int i = 0; i < uiChars.Count; ++i)
-            (uiChars[i].transform as RectTransform).localScale = new Vector3(Config.ControlScale, Config.ControlScale, Config.ControlScale);
+            (uiChars[i].transform as RectTransform).localScale = new Vector3(UIConfig.ControlScale, UIConfig.ControlScale, UIConfig.ControlScale);
     }
 }
