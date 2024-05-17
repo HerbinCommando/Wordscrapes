@@ -8,11 +8,14 @@ public class UIChar : MonoBehaviour
     public enum State
     {
         Default,
+        Disabled,
         Selected,
+        Yellow
     }
 
     public Image imageButton;
     public Image imageSelected;
+    public Image imageYellow;
     public TextMeshProUGUI textChar;
 
     public Action<UIChar> onPointerDown;
@@ -21,8 +24,10 @@ public class UIChar : MonoBehaviour
 
     [NonSerialized] public State state;
 
+    public char Char => textChar.text[0];
     public string Character => textChar.text;
-    public KeyCode KeyCode => (KeyCode)Enum.Parse(typeof(KeyCode), Character[0].ToString());
+    public bool Disabled => state == State.Disabled;
+    public KeyCode KeyCode => (KeyCode)Enum.Parse(typeof(KeyCode), Character);
     public bool Selected => state == State.Selected;
 
     private void Awake()
@@ -49,7 +54,10 @@ public class UIChar : MonoBehaviour
     {
         state = _state;
 
-        imageButton.gameObject.SetActive(_state == State.Default);
+        textChar.alpha = _state == State.Disabled ? 0.3f : 1.0f;
+
+        imageButton.gameObject.SetActive(_state == State.Default || _state == State.Disabled);
         imageSelected.gameObject.SetActive(_state == State.Selected);
+        imageYellow.gameObject.SetActive(_state == State.Yellow);
     }
 }
