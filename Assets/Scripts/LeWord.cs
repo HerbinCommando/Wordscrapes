@@ -90,8 +90,6 @@ public class LeWord : MonoBehaviour
 
         List<string> filteredStrings = Dictionary.lines.Where(s => s.Length == 5).ToList();
         solution = filteredStrings[Random.Range(0, filteredStrings.Count)];
-
-        Debug.Log(solution);
     }
 
     private void Start()

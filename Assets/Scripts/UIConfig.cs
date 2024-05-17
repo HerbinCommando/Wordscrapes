@@ -34,7 +34,6 @@ public class UIConfig : MonoBehaviour
     public Slider sliderControlScale;
     public Slider sliderGameTime;
     public Slider sliderWordLength;
-    public SplashScreen splashScreen;
     public TextMeshProUGUI textControlRadiusPx;
     public TextMeshProUGUI textControlScale;
     public TextMeshProUGUI textGameTimeSeconds;
@@ -43,6 +42,7 @@ public class UIConfig : MonoBehaviour
     public Toggle toggleShowSolutions;
     public Toggle toggleVibrateOnHighlight;
     public Toggle toggleVibrateOnSubmit;
+    public UISplashScreen uiSplashScreen;
 
     public static void Load()
     {
@@ -121,7 +121,8 @@ public class UIConfig : MonoBehaviour
 
     public void OnClickMainMenu()
     {
-        splashScreen.gameObject.SetActive(true);
+        gameObject.SetActive(false);
+        uiSplashScreen.gameObject.SetActive(true);
     }
 
     private void OnEnable()

@@ -7,6 +7,10 @@ using UnityEngine.UI;
 
 public class WordScrapes : MonoBehaviour
 {
+    public static int GamesPlayed;
+    public static int WordsFound;
+    public static int WordsTotal;
+
     public Image imageBackgroundA;
     public Image imageBackgroundB;
     public GameObject prefabUIChar;
@@ -36,6 +40,22 @@ public class WordScrapes : MonoBehaviour
     private List<UIWord> uiWords = new List<UIWord>();
     private List<string> wordHits = new List<string>();
     private List<string> wordSolutions = new List<string>();
+
+    public static void Load()
+    {
+        GamesPlayed = PlayerPrefs.GetInt(nameof(GamesPlayed), 0);
+        WordsFound = PlayerPrefs.GetInt(nameof(WordsFound), 0);
+        WordsTotal = PlayerPrefs.GetInt(nameof(WordsTotal), 0);
+    }
+
+    public static void Save()
+    {
+        PlayerPrefs.SetInt(nameof(GamesPlayed), GamesPlayed);
+        PlayerPrefs.SetInt(nameof(WordsFound), WordsFound);
+        PlayerPrefs.SetInt(nameof(WordsTotal), WordsTotal);
+
+        PlayerPrefs.Save();
+    }
 
     private void AppendCurrentString(UIChar uiChar)
     {
@@ -278,24 +298,24 @@ public class WordScrapes : MonoBehaviour
 
     private void IncrementStats(int gamesPlayedDelta, int wordsFoundDelta, int wordsTotalDelta)
     {
-        float currentFoundPct = Stats.wordsTotal == 0 ? 0f : (float)Stats.wordsFound / Stats.wordsTotal * 100f;
+        float currentFoundPct = WordsTotal == 0 ? 0f : (float)WordsFound / WordsTotal * 100f;
 
-        Stats.gamesPlayed += gamesPlayedDelta;
-        Stats.wordsFound += wordsFoundDelta;
-        Stats.wordsTotal += wordsTotalDelta;
+        GamesPlayed += gamesPlayedDelta;
+        WordsFound += wordsFoundDelta;
+        WordsTotal += wordsTotalDelta;
 
-        float foundPct = (float)Stats.wordsFound / Stats.wordsTotal * 100f;
+        float foundPct = (float)WordsFound / WordsTotal * 100f;
 
         textFoundPct.text = $"{foundPct:F2}%";
         textFoundPctDelta.text = $"{foundPct - currentFoundPct:F2}%";
-        textGamesPlayed.text = $"{Stats.gamesPlayed}";
+        textGamesPlayed.text = $"{GamesPlayed}";
         textGamesPlayedDelta.text = $"+{gamesPlayedDelta}";
-        textWordsFound.text = $"{Stats.wordsFound}";
+        textWordsFound.text = $"{WordsFound}";
         textWordsFoundDelta.text = $"+{wordsFoundDelta}";
-        textWordsTotal.text = $"{Stats.wordsTotal}";
+        textWordsTotal.text = $"{WordsTotal}";
         textWordsTotalDelta.text = $"+{wordsTotalDelta}";
 
-        Stats.Save();
+        Save();
     }
 
     private void MakeUILine(RectTransform a, RectTransform b)
@@ -323,7 +343,7 @@ public class WordScrapes : MonoBehaviour
     {
         UIConfig.Load();
         Dictionary.Load();
-        Stats.Load();
+        Load();
 
         GameStart();
     }

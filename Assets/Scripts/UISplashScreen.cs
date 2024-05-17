@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class SplashScreen : MonoBehaviour
+public class UISplashScreen : MonoBehaviour
 {
     public GameObject LeWord;
     public GameObject WordScrapes;
