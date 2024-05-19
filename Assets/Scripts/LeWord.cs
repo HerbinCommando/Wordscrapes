@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class LeWord : MonoBehaviour
 {
@@ -9,6 +11,8 @@ public class LeWord : MonoBehaviour
 
     public List<List<UIChar>> gameBoard;
     public Transform panelWords;
+    public TextMeshProUGUI textSolution;
+    public GameObject uiGameOver;
     public UIKeyboard uiKeyboard;
 
     bool[] marked = new bool[5];
@@ -90,13 +94,16 @@ public class LeWord : MonoBehaviour
 
         List<string> filteredStrings = Dictionary.lines.Where(s => s.Length == 5).ToList();
         solution = filteredStrings[Random.Range(0, filteredStrings.Count)];
+        textSolution.text = $"Le Word: {solution}";
     }
 
     private void Start()
     {
+        UIConfig.Load();
         Dictionary.Load();
 
         gameBoard = new List<List<UIChar>>();
+        uiGameOver.SetActive(false);
         uiKeyboard.onBackspaceDown += (_) => { DeselectOne(); };
         uiKeyboard.onEnterDown += (_) => { Submit(); };
         uiKeyboard.onPointerDown += (UIChar uiChar) => {
@@ -118,6 +125,9 @@ public class LeWord : MonoBehaviour
 
     private void Update()
     {
+        if (uiGameOver.activeSelf)
+            return;
+
         foreach (var uiChar in uiKeyboard.uiChars)
             if (Input.GetKeyDown(uiChar.KeyCode) && !uiChar.Disabled)
                 Append(uiChar.Char);
@@ -180,7 +190,7 @@ public class LeWord : MonoBehaviour
 
             if (word == solution)
             {
-                GameStart(); // Game Over, you win!
+                uiGameOver.SetActive(true);
                 return;
             }
 
@@ -190,10 +200,21 @@ public class LeWord : MonoBehaviour
                 marked[i] = false;
 
             if (++wordIdx == WordCount)
-                GameStart();
+                uiGameOver.SetActive(true);
             else
                 foreach (var uiChar in gameBoard[wordIdx])
                     uiChar.textChar.text = "_";
         }
+    }
+
+    public void OnClickNewGame()
+    {
+        GameStart();
+        uiGameOver.SetActive(false);
+    }
+
+    public void OnClickQuitGame()
+    {
+        uiGameOver.SetActive(true);
     }
 }

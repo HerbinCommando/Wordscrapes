@@ -74,12 +74,6 @@ public class WordScrapes : MonoBehaviour
             Handheld.Vibrate();
     }
 
-    private void Awake()
-    {
-        uiGameOver.SetActive(false);
-        uiConfig.SetActive(false);
-    }
-
     private void CheckCurrentString()
     {
         foreach (var sw in uiWords)
@@ -341,9 +335,11 @@ public class WordScrapes : MonoBehaviour
 
     private void Start()
     {
-        UIConfig.Load();
         Dictionary.Load();
         Load();
+        UIConfig.Load();
+        uiGameOver.SetActive(false);
+        uiConfig.SetActive(false);
 
         GameStart();
     }
