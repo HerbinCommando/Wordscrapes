@@ -33,8 +33,10 @@ public class UIKeyboard : MonoBehaviour
             {
                 uiCharGO = Instantiate(prefabUIChar);
                 uiChar = uiCharGO.GetComponent<UIChar>();
-                uiChar.textChar.fontSize = 130;
-                uiChar.textChar.text = ch.ToString();
+                uiChar.textChar.enableAutoSizing = true;
+                uiChar.textChar.fontSizeMax = 130;
+                uiChar.textChar.fontSizeMin = 75;
+                uiChar.textChar.text = $"{ch}";
 
                 uiChar.onPointerDown += OnPointerDown;
 

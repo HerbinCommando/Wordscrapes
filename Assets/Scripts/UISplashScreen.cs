@@ -6,8 +6,8 @@ public class UISplashScreen : MonoBehaviour
     public GameObject wordScrapes;
 
     // Hack.
-    // Start() is called on both games, causing an initialization race condition
-    // Reference and Activate the correct quit button here because GameStart()'s have already been called.
+    // Start() is called on both games, causing an initialization race condition, GameStart()'s have already been called.
+    // Reference and aßctivate the correct quit button here.
     public GameObject uiConfig;
     public GameObject uiConfigQuitLeWord;
     public GameObject uiConfigQuitWordScrapes;

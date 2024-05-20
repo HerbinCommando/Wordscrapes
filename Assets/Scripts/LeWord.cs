@@ -9,9 +9,10 @@ public class LeWord : MonoBehaviour
     public const int WordCount = 6;
     public const int WordLength = 5;
 
-    public List<List<UIChar>> gameBoard;
+    public List<List<UIChar>> gameBoard = new List<List<UIChar>>();
     public Transform panelWords;
     public TextMeshProUGUI textSolution;
+    public UIBackgrounds uiBackgrounds;
     public GameObject uiGameOver;
     public UIKeyboard uiKeyboard;
 
@@ -73,6 +74,8 @@ public class LeWord : MonoBehaviour
         word = string.Empty;
         wordIdx = 0;
 
+        uiBackgrounds.Shuffle();
+
         for (int i = 0; i < marked.Length; ++i)
             marked[i] = false;
 
@@ -99,10 +102,9 @@ public class LeWord : MonoBehaviour
 
     private void Start()
     {
-        UIConfig.Load();
+        Config.Load();
         Dictionary.Load();
 
-        gameBoard = new List<List<UIChar>>();
         uiGameOver.SetActive(false);
         uiKeyboard.onBackspaceDown += (_) => { DeselectOne(); };
         uiKeyboard.onEnterDown += (_) => { Submit(); };
@@ -152,11 +154,11 @@ public class LeWord : MonoBehaviour
                 {
                     marked[i] = true;
 
-                    gameBoard[wordIdx][i].SetState(UIChar.State.Selected);
+                    gameBoard[wordIdx][i].SetState(UIChar.State.Green);
 
                     foreach (var uiChar in uiKeyboard.uiChars)
                         if (uiChar.Char == solution[i])
-                            uiChar.SetState(UIChar.State.Selected);
+                            uiChar.SetState(UIChar.State.Green);
                 }
             }
 
@@ -204,6 +206,24 @@ public class LeWord : MonoBehaviour
             else
                 foreach (var uiChar in gameBoard[wordIdx])
                     uiChar.textChar.text = "_";
+        }
+    }
+
+    public void OnClickLeWord()
+    {
+        if (Config.Blacklist.Contains(solution))
+        {
+            textSolution.text = $"Le Word: {solution}";
+
+            Config.Blacklist.Remove(solution);
+            Config.Save();
+        }
+        else
+        {
+            textSolution.text = $"Le Word: <s><color=red>{solution}</color></s>";
+
+            Config.Blacklist.Add(solution);
+            Config.Save();
         }
     }
 

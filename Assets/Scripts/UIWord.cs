@@ -31,7 +31,7 @@ public class UIWord : MonoBehaviour
         textWord.text = string.Empty;
         word = _word;
 
-        if (UIConfig.ShowSolutions)
+        if (Config.ShowSolutions)
             textWord.text = word;
         else
             for (int i = 0; i < _word.Length; ++i)
@@ -49,13 +49,16 @@ public class UIWord : MonoBehaviour
                 textWord.color = Color.gray;
                 textWord.fontStyle |= FontStyles.Strikethrough;
                 break;
+
             case State.Default:
                 textWord.color = Color.white;
                 break;
+
             case State.Hit:
                 textWord.color = Color.green;
                 textWord.text = word;
                 break;
+
             case State.Miss:
                 textWord.color = Color.red;
                 textWord.text = word;
