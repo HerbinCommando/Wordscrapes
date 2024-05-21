@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class LeWord : MonoBehaviour
 {
@@ -13,9 +12,11 @@ public class LeWord : MonoBehaviour
     public Transform panelWords;
     public TextMeshProUGUI textSolution;
     public UIBackgrounds uiBackgrounds;
+    public UIConfig uiConfig;
     public GameObject uiGameOver;
     public UIKeyboard uiKeyboard;
 
+    bool[] locked = new bool[5];
     bool[] marked = new bool[5];
     string solution = string.Empty;
     string word = string.Empty;
@@ -75,6 +76,9 @@ public class LeWord : MonoBehaviour
         wordIdx = 0;
 
         uiBackgrounds.Shuffle();
+
+        for (int i = 0; i < locked.Length; ++i)
+            locked[i] = false;
 
         for (int i = 0; i < marked.Length; ++i)
             marked[i] = false;
@@ -146,12 +150,24 @@ public class LeWord : MonoBehaviour
 
     private void Submit()
     {
-        if (word.Length == WordLength && Dictionary.lines.Contains(word))
+        bool enteredLockedLetters = true;
+
+        for (int i = 0; i < WordLength; ++i)
+        {
+            if (locked[i] && word[i] != solution[i])
+            {
+                enteredLockedLetters = false;
+                break;
+            }
+        }
+
+        if (enteredLockedLetters && word.Length == WordLength && Dictionary.lines.Contains(word) && !Config.Blacklist.Contains(word))
         {
             for (int i = 0; i < WordLength; ++i)
             {
                 if (solution[i] == word[i])
                 {
+                    locked[i] = true;
                     marked[i] = true;
 
                     gameBoard[wordIdx][i].SetState(UIChar.State.Green);
@@ -193,6 +209,7 @@ public class LeWord : MonoBehaviour
             if (word == solution)
             {
                 uiGameOver.SetActive(true);
+
                 return;
             }
 
@@ -236,5 +253,10 @@ public class LeWord : MonoBehaviour
     public void OnClickQuitGame()
     {
         uiGameOver.SetActive(true);
+    }
+
+    public void OnClickSettings()
+    {
+        uiConfig.Activate(Config.Game.LeWord);
     }
 }

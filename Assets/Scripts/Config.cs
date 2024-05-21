@@ -3,6 +3,12 @@ using UnityEngine;
 
 public static class Config
 {
+    public enum Game
+    {
+        LeWord,
+        WordScrapes
+    }
+
     public static bool LogDictionary = false;
     public static bool LogPermutations = false;
     public static bool LogPointerEvents = false;
@@ -10,20 +16,20 @@ public static class Config
 
     public static List<string> Blacklist = new List<string>();
     public static int ControlRadiusPx = 275;
-    public static int ControlRadiusPxMax = 500;
-    public static int ControlRadiusPxMin = 200;
+    public const int ControlRadiusPxMax = 500;
+    public const int ControlRadiusPxMin = 200;
     public static float ControlScale = 1.3f;
-    public static float ControlScaleMax = 2.0f;
-    public static float ControlScaleMin = 0.75f;
+    public const float ControlScaleMax = 2.0f;
+    public const float ControlScaleMin = 0.75f;
     public static bool GameTimed = false;
     public static int GameTimeSeconds = 60;
-    public static int GameTimeSecondsMax = 300;
-    public static int GameTimeSecondsMin = 30;
+    public const int GameTimeSecondsMax = 300;
+    public const int GameTimeSecondsMin = 30;
     public static bool ShowSolutions = false;
     public static bool VibrateOnHighlight = false;
     public static int WordLength = 5;
-    public static int WordLengthMax = 10;
-    public static int WordLengthMin = 3;
+    public const int WordLengthMax = 10;
+    public const int WordLengthMin = 3;
 
     public static void Load()
     {

@@ -4,9 +4,12 @@ using UnityEngine.UI;
 
 public class UIConfig : MonoBehaviour
 {
-    public GameObject blacklist;
+    public GameObject buttonQuitLeWord;
+    public GameObject buttonQuitWordScrapes;
     public GameObject prefabUIWord;
     public RectTransform rectUIWords;
+    public GameObject scrollPanelLeWordUIConfig;
+    public GameObject scrollPanelWordScrapesUIConfig;
     public Slider sliderControlRadius;
     public Slider sliderControlScale;
     public Slider sliderGameTime;
@@ -19,11 +22,49 @@ public class UIConfig : MonoBehaviour
     public Toggle toggleShowSolutions;
     public Toggle toggleVibrateOnHighlight;
     public Toggle toggleVibrateOnSubmit;
+    public GameObject uiBlacklist;
     public UISplashScreen uiSplashScreen;
+
+    private void Start()
+    {
+        gameObject.SetActive(false);
+    }
+
+    public void Activate(Config.Game game)
+    {
+        sliderControlRadius.maxValue = Config.ControlRadiusPxMax;
+        sliderControlRadius.minValue = Config.ControlRadiusPxMin;
+        sliderControlRadius.value = Config.ControlRadiusPx;
+        sliderControlScale.maxValue = Config.ControlScaleMax;
+        sliderControlScale.minValue = Config.ControlScaleMin;
+        sliderControlScale.value = Config.ControlScale;
+        sliderWordLength.maxValue = Config.WordLengthMax;
+        sliderWordLength.minValue = Config.WordLengthMin;
+        sliderWordLength.value = Config.WordLength;
+        sliderGameTime.maxValue = Config.GameTimeSecondsMax;
+        sliderGameTime.minValue = Config.GameTimeSecondsMin;
+        sliderGameTime.value = Config.GameTimeSeconds;
+        textControlRadiusPx.text = $"CONTROL RADIUS: {Config.ControlRadiusPx}px";
+        textControlScale.text = $"CONTROL SCALE: {Config.ControlScale}";
+        textGameTimeSeconds.text = $"GAME TIME: {Config.GameTimeSeconds}s";
+        textWordLength.text = $"WORD LENGTH: {Config.WordLength}";
+        toggleGameTimed.isOn = Config.GameTimed;
+        toggleShowSolutions.isOn = Config.ShowSolutions;
+        toggleVibrateOnHighlight.isOn = Config.VibrateOnHighlight;
+        toggleVibrateOnSubmit.isOn = !Config.VibrateOnHighlight;
+
+        buttonQuitLeWord.SetActive(game == Config.Game.LeWord);
+        buttonQuitWordScrapes.SetActive(game == Config.Game.WordScrapes);
+        scrollPanelLeWordUIConfig.SetActive(game == Config.Game.LeWord);
+        scrollPanelWordScrapesUIConfig.SetActive(game == Config.Game.WordScrapes);
+        uiBlacklist.SetActive(false);
+
+        gameObject.SetActive(true);
+    }
 
     public void OnClickBlacklistClose()
     {
-        blacklist.SetActive(false);
+        uiBlacklist.SetActive(false);
         Config.Save();
 
         for (int i = rectUIWords.childCount - 1; i >= 0; --i)
@@ -32,7 +73,7 @@ public class UIConfig : MonoBehaviour
 
     public void OnClickBlacklistOpen()
     {
-        blacklist.SetActive(true);
+        uiBlacklist.SetActive(true);
 
         foreach (string word in Config.Blacklist)
         {
@@ -72,32 +113,6 @@ public class UIConfig : MonoBehaviour
     {
         gameObject.SetActive(false);
         uiSplashScreen.gameObject.SetActive(true);
-    }
-
-    private void OnEnable()
-    {
-        sliderControlRadius.maxValue = Config.ControlRadiusPxMax;
-        sliderControlRadius.minValue = Config.ControlRadiusPxMin;
-        sliderControlRadius.value = Config.ControlRadiusPx;
-        sliderControlScale.maxValue = Config.ControlScaleMax;
-        sliderControlScale.minValue = Config.ControlScaleMin;
-        sliderControlScale.value = Config.ControlScale;
-        sliderWordLength.maxValue = Config.WordLengthMax;
-        sliderWordLength.minValue = Config.WordLengthMin;
-        sliderWordLength.value = Config.WordLength;
-        sliderGameTime.maxValue = Config.GameTimeSecondsMax;
-        sliderGameTime.minValue = Config.GameTimeSecondsMin;
-        sliderGameTime.value = Config.GameTimeSeconds;
-        textControlRadiusPx.text = $"CONTROL RADIUS: {Config.ControlRadiusPx}px";
-        textControlScale.text = $"CONTROL SCALE: {Config.ControlScale}";
-        textGameTimeSeconds.text = $"GAME TIME: {Config.GameTimeSeconds}s";
-        textWordLength.text = $"WORD LENGTH: {Config.WordLength}";
-        toggleGameTimed.isOn = Config.GameTimed;
-        toggleShowSolutions.isOn = Config.ShowSolutions;
-        toggleVibrateOnHighlight.isOn = Config.VibrateOnHighlight;
-        toggleVibrateOnSubmit.isOn = !Config.VibrateOnHighlight;
-
-        blacklist.SetActive(false);
     }
 
     public void SetControlRadius(int _)

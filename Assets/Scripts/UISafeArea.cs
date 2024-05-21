@@ -2,12 +2,13 @@ using UnityEngine;
 
 public class UISafeArea : MonoBehaviour
 {
-    public RectTransform rectTransform;
-
     private Rect lastSafeArea = new Rect(0, 0, 0, 0);
+    private RectTransform rectTransform;
 
     void Awake()
     {
+        rectTransform = transform as RectTransform;
+
         Refresh();
     }
 

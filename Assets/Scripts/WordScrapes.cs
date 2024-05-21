@@ -23,7 +23,7 @@ public class WordScrapes : MonoBehaviour
     public TextMeshProUGUI textWordsTotal;
     public TextMeshProUGUI textWordsTotalDelta;
     public UIBackgrounds uiBackgrounds;
-    public GameObject uiConfig;
+    public UIConfig uiConfig;
     public GameObject uiGameOver;
 
     private string currentString = string.Empty;
@@ -290,7 +290,6 @@ public class WordScrapes : MonoBehaviour
         Stats.Load();
 
         uiGameOver.SetActive(false);
-        uiConfig.SetActive(false);
 
         GameStart();
     }
@@ -340,7 +339,7 @@ public class WordScrapes : MonoBehaviour
     public void OnClickQuitGame()
     {
         Config.Save();
-        uiConfig.SetActive(false);
+        uiConfig.gameObject.SetActive(false);
         GameOver();
     }
 
@@ -354,7 +353,7 @@ public class WordScrapes : MonoBehaviour
     public void OnClickSettings()
     {
         Deselect();
-        uiConfig.SetActive(true);
+        uiConfig.Activate(Config.Game.WordScrapes);
     }
 
     public void OnClickShuffle()
