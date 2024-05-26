@@ -10,6 +10,7 @@ public class WordScrapes : MonoBehaviour
     public GameObject prefabUIChar;
     public GameObject prefabUILine;
     public GameObject prefabUIWord;
+    public GridLayoutGroup gridLayoutGroup;
     public RectTransform rectUIChars;
     public RectTransform rectUIWords;
     public TextMeshProUGUI textCurrentString;
@@ -96,7 +97,7 @@ public class WordScrapes : MonoBehaviour
 
         if (uiLines.Count > 0)
         {
-            Destroy(uiLines[uiLines.Count - 1]);
+            Destroy(uiLines[^1]);
             uiLines.RemoveAt(uiLines.Count - 1);
         }
 
@@ -110,6 +111,7 @@ public class WordScrapes : MonoBehaviour
         currentString = string.Empty;
         deltaTimeS = 0f;
         gameTimeS = Config.GameTimeSeconds;
+        gridLayoutGroup.cellSize = new Vector2(32 * Config.WordLength, gridLayoutGroup.cellSize.y);
         textCurrentString.text = string.Empty;
         textGameTime.text = Config.GameTimeSeconds.ToString();
 
@@ -150,7 +152,6 @@ public class WordScrapes : MonoBehaviour
 
         int maxlen = 0;
         var start = DateTime.Now;
-
         int iterations = 0;
 
         while (s.Count > 0)
@@ -178,11 +179,13 @@ public class WordScrapes : MonoBehaviour
         }
         //-----------------------
 
+        wordSolutions = wordSolutions.OrderBy(s => s.Length).ThenBy(s => s).ToList();
+
         // Instance Prefabs
         foreach (string word in wordSolutions)
         {
-            GameObject solutionWordGO = Instantiate(prefabUIWord);
-            UIWord solutionWord = solutionWordGO.GetComponent<UIWord>();
+            GameObject instance = Instantiate(prefabUIWord);
+            UIWord solutionWord = instance.GetComponent<UIWord>();
             solutionWord.onClick = OnClickUIWord;
 
             solutionWord.Set(word);
@@ -194,8 +197,8 @@ public class WordScrapes : MonoBehaviour
 
         for (int i = 0; i < Config.WordLength; ++i)
         {
-            GameObject uiCharGO = Instantiate(prefabUIChar);
-            UIChar uiChar = uiCharGO.GetComponent<UIChar>();
+            GameObject instance = Instantiate(prefabUIChar);
+            UIChar uiChar = instance.GetComponent<UIChar>();
             uiChar.textChar.text = pickedWord[i].ToString();
 
             uiChar.onPointerDown += OnPointerDown;
@@ -264,8 +267,8 @@ public class WordScrapes : MonoBehaviour
 
     private void MakeUILine(RectTransform a, RectTransform b)
     {
-        GameObject newImageObject = Instantiate(prefabUILine, transform.position, Quaternion.identity);
-        RectTransform newImageRectTransform = newImageObject.GetComponent<RectTransform>();
+        GameObject instance = Instantiate(prefabUILine, transform.position, Quaternion.identity);
+        RectTransform newImageRectTransform = instance.GetComponent<RectTransform>();
         Vector3 positionBetweenRects = (a.position + b.position) / 2f;
         newImageRectTransform.position = positionBetweenRects;
 
@@ -280,7 +283,7 @@ public class WordScrapes : MonoBehaviour
 
         newImageRectTransform.SetParent(a.parent);
         newImageRectTransform.SetAsFirstSibling();
-        uiLines.Add(newImageObject);
+        uiLines.Add(instance);
     }
 
     private void Start()

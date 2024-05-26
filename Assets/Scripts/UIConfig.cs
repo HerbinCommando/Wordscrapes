@@ -77,9 +77,12 @@ public class UIConfig : MonoBehaviour
 
         foreach (string word in Config.Blacklist)
         {
-            GameObject solutionWordGO = Instantiate(prefabUIWord);
-            UIWord solutionWord = solutionWordGO.GetComponent<UIWord>();
+            GameObject instance = Instantiate(prefabUIWord);
+            RectTransform rectTransform = instance.GetComponent<RectTransform>();
+            rectTransform.sizeDelta = new Vector2(600, rectTransform.sizeDelta.y);
+            UIWord solutionWord = instance.GetComponent<UIWord>();
             solutionWord.onClick = OnClickUIWord;
+            solutionWord.textWord.fontSize = 66;
 
             solutionWord.Set(word);
             solutionWord.SetState(UIWord.State.Miss);

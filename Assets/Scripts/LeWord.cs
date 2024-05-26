@@ -161,6 +161,7 @@ public class LeWord : MonoBehaviour
             }
         }
 
+
         if (enteredLockedLetters && word.Length == WordLength && Dictionary.lines.Contains(word) && !Config.Blacklist.Contains(word))
         {
             for (int i = 0; i < WordLength; ++i)
@@ -187,6 +188,7 @@ public class LeWord : MonoBehaviour
                         if (!marked[j] && solution[j] == gameBoard[wordIdx][i].Char)
                         {
                             marked[j] = true;
+                            locked[j] = true;
 
                             gameBoard[wordIdx][i].SetState(UIChar.State.Yellow);
 

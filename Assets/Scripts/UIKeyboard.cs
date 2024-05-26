@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIKeyboard : MonoBehaviour
 {
@@ -24,15 +25,19 @@ public class UIKeyboard : MonoBehaviour
 
     private void Start()
     {
-        GameObject uiCharGO;
+        GameObject instance;
+        LayoutElement layoutElement;
         UIChar uiChar;
 
         for (int i = 0; i < Keyboard.Length; ++i)
         {
             foreach (char ch in Keyboard[i])
             {
-                uiCharGO = Instantiate(prefabUIChar);
-                uiChar = uiCharGO.GetComponent<UIChar>();
+                instance = Instantiate(prefabUIChar);
+                layoutElement = instance.AddComponent<LayoutElement>();
+                layoutElement.minHeight = 75;
+                layoutElement.preferredHeight = 75;
+                uiChar = instance.GetComponent<UIChar>();
                 uiChar.textChar.fontSize = 75;
                 uiChar.textChar.text = $"{ch}";
 
@@ -43,8 +48,11 @@ public class UIKeyboard : MonoBehaviour
             }
         }
 
-        uiCharGO = Instantiate(prefabUIChar);
-        uiChar = uiCharGO.GetComponent<UIChar>();
+        instance = Instantiate(prefabUIChar);
+        layoutElement = instance.AddComponent<LayoutElement>();
+        layoutElement.minHeight = 75;
+        layoutElement.preferredHeight = 75;
+        uiChar = instance.GetComponent<UIChar>();
         uiChar.textChar.text = "enter";
         uiChar.textChar.enableAutoSizing = true;
 
@@ -53,8 +61,11 @@ public class UIKeyboard : MonoBehaviour
         uiChar.transform.SetParent(panelKeyboard.GetChild(2));
         uiChar.transform.SetAsFirstSibling();
 
-        uiCharGO = Instantiate(prefabUIChar);
-        uiChar = uiCharGO.GetComponent<UIChar>();
+        instance = Instantiate(prefabUIChar);
+        layoutElement = instance.AddComponent<LayoutElement>();
+        layoutElement.minHeight = 75;
+        layoutElement.preferredHeight = 75;
+        uiChar = instance.GetComponent<UIChar>();
         uiChar.textChar.text = "bsp";
         uiChar.textChar.enableAutoSizing = true;
 
