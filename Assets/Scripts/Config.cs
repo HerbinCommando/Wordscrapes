@@ -35,6 +35,7 @@ public static class Config
 
     public static void Load()
     {
+        BorgleClassic = PlayerPrefs.GetInt(nameof(BorgleClassic), 1) == 1;
         ControlRadiusPx = PlayerPrefs.GetInt(nameof(ControlRadiusPx), ControlRadiusPx);
         ControlScale = PlayerPrefs.GetFloat(nameof(ControlScale), ControlScale);
         GameTimed = PlayerPrefs.GetInt(nameof(GameTimed), 0) == 1;
@@ -49,6 +50,7 @@ public static class Config
 
     public static void Save()
     {
+        PlayerPrefs.SetInt(nameof(BorgleClassic), BorgleClassic ? 1 : 0);
         PlayerPrefs.SetFloat(nameof(ControlScale), ControlScale);
         PlayerPrefs.SetInt(nameof(ControlRadiusPx), ControlRadiusPx);
         PlayerPrefs.SetInt(nameof(GameTimed), GameTimed ? 1 : 0);

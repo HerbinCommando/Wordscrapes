@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Borgle : MonoBehaviour
 {
-    public static readonly string[][] Classic = new string[][] {
+    public static readonly string[][] BorgleClassic = new string[][] {
         new string[] { "A", "A", "C", "I", "O", "T", },
         new string[] { "A", "B", "I", "L", "T", "Y", },
         new string[] { "A", "B", "J", "M", "O", "Qu", },
@@ -23,7 +23,7 @@ public class Borgle : MonoBehaviour
         new string[] { "G", "I", "L", "R", "U", "W", }
     };
 
-    public static readonly string[][] Modern = new string[][] {
+    public static readonly string[][] BorgleModern = new string[][] {
         new string[] { "A", "A", "E", "E", "G", "N" },
         new string[] { "A", "B", "B", "J", "O", "O" },
         new string[] { "A", "C", "H", "O", "P", "S" },
@@ -141,14 +141,13 @@ public class Borgle : MonoBehaviour
 
         for (int i = rectUIWords.childCount - 1; i >= 0; --i)
             Destroy(rectUIWords.GetChild(i).gameObject);
+
+        for (int i = 0; i < uiChars.Count; ++i)
+            uiChars[i].textChar.text = RollDie(i);
     }
 
     private void GameOver()
     {
-        foreach (var uiWord in uiWords)
-            if (!uiWord.Hit)
-                uiWord.SetState(UIWord.State.Miss);
-
         uiGameOver.SetActive(true);
     }
 
@@ -176,9 +175,9 @@ public class Borgle : MonoBehaviour
     private string RollDie(int idx)
     {
         if (Config.BorgleClassic)
-            return Classic[idx][Random.Range(0, 6)];
+            return BorgleClassic[idx][Random.Range(0, 6)];
         else
-            return Modern[idx][Random.Range(0, 6)];
+            return BorgleModern[idx][Random.Range(0, 6)];
     }
 
     private void Start()
@@ -192,8 +191,6 @@ public class Borgle : MonoBehaviour
         UIChar[] instances = rectUIChars.GetComponentsInChildren<UIChar>();
         for (int i = 0; i < instances.Length; ++i)
         {
-            instances[i].textChar.text = RollDie(i);
-
             instances[i].onPointerDown += OnPointerDown;
             instances[i].onPointerUp += OnPointerUp;
             instances[i].onPointerEnter += OnPointerEnter;
@@ -256,7 +253,7 @@ public class Borgle : MonoBehaviour
         if (uiWord.state == UIWord.State.Blacklist)
         {
             Config.Blacklist.Remove(uiWord.value);
-            uiWord.SetState(wordHits.Contains(uiWord.value) ? UIWord.State.Hit : UIWord.State.Miss);
+            uiWord.SetState(UIWord.State.Default);
         }
         else if (uiWord.state != UIWord.State.Default)
         {

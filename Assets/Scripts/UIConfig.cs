@@ -16,10 +16,14 @@ public class UIConfig : MonoBehaviour
     public Slider sliderControlScale;
     public Slider sliderGameTime;
     public Slider sliderWordLength;
+    public TextMeshProUGUI textBorgleClassic;
+    public TextMeshProUGUI textBorgleModern;
     public TextMeshProUGUI textControlRadiusPx;
     public TextMeshProUGUI textControlScale;
     public TextMeshProUGUI textGameTimeSeconds;
     public TextMeshProUGUI textWordLength;
+    public Toggle toggleBorgleClassic;
+    public Toggle toggleBorgleModern;
     public Toggle toggleGameTimed;
     public Toggle toggleShowSolutions;
     public Toggle toggleVibrateOnHighlight;
@@ -50,6 +54,8 @@ public class UIConfig : MonoBehaviour
         textControlScale.text = $"CONTROL SCALE: {Config.ControlScale}";
         textGameTimeSeconds.text = $"GAME TIME: {Config.GameTimeSeconds}s";
         textWordLength.text = $"WORD LENGTH: {Config.WordLength}";
+        toggleBorgleClassic.isOn = Config.BorgleClassic;
+        toggleBorgleModern.isOn = !Config.BorgleClassic;
         toggleGameTimed.isOn = Config.GameTimed;
         toggleShowSolutions.isOn = Config.ShowSolutions;
         toggleVibrateOnHighlight.isOn = Config.VibrateOnHighlight;
@@ -96,6 +102,7 @@ public class UIConfig : MonoBehaviour
 
     public void OnClickClose()
     {
+        Config.Save();
         gameObject.SetActive(false);
     }
 
@@ -120,6 +127,22 @@ public class UIConfig : MonoBehaviour
     {
         gameObject.SetActive(false);
         uiSplashScreen.gameObject.SetActive(true);
+    }
+
+    public void SetBorgleClassic(bool _)
+    {
+        Config.BorgleClassic = toggleBorgleClassic.isOn;
+        textBorgleClassic.alpha = 0.75f;
+        textBorgleModern.alpha = 1.0f;
+        toggleBorgleModern.isOn = !toggleBorgleClassic.isOn;
+    }
+
+    public void SetBorgleModern(bool _)
+    {
+        Config.BorgleClassic = toggleBorgleModern.isOn;
+        textBorgleClassic.alpha = 1.0f;
+        textBorgleModern.alpha = 0.75f;
+        toggleBorgleClassic.isOn = !toggleBorgleModern.isOn;
     }
 
     public void SetControlRadius(int _)
