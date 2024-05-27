@@ -6,6 +6,11 @@ public static class Dictionary
     public static string fileName = "scrabble_dictionary"; // File name without extension
     public static List<string> lines = new List<string>();
 
+    public static bool Contains(string word)
+    {
+        return lines.Contains(word) && !Config.Blacklist.Contains(word);
+    }
+
     public static void Load()
     {
         TextAsset textAsset = Resources.Load<TextAsset>(fileName);

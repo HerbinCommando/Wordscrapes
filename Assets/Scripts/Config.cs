@@ -5,6 +5,7 @@ public static class Config
 {
     public enum Game
     {
+        Borgle,
         LeWord,
         WordScrapes
     }
@@ -15,6 +16,7 @@ public static class Config
     public static bool LogSolutionWords = false;
 
     public static List<string> Blacklist = new List<string>();
+    public static bool BorgleClassic = true;
     public static int ControlRadiusPx = 275;
     public const int ControlRadiusPxMax = 500;
     public const int ControlRadiusPxMin = 200;

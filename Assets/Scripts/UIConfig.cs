@@ -4,10 +4,12 @@ using UnityEngine.UI;
 
 public class UIConfig : MonoBehaviour
 {
+    public GameObject buttonQuitBorgle;
     public GameObject buttonQuitLeWord;
     public GameObject buttonQuitWordScrapes;
     public GameObject prefabUIWord;
     public RectTransform rectUIWords;
+    public GameObject scrollPanelBorgleUIConfig;
     public GameObject scrollPanelLeWordUIConfig;
     public GameObject scrollPanelWordScrapesUIConfig;
     public Slider sliderControlRadius;
@@ -53,8 +55,10 @@ public class UIConfig : MonoBehaviour
         toggleVibrateOnHighlight.isOn = Config.VibrateOnHighlight;
         toggleVibrateOnSubmit.isOn = !Config.VibrateOnHighlight;
 
+        buttonQuitBorgle.SetActive(game == Config.Game.Borgle);
         buttonQuitLeWord.SetActive(game == Config.Game.LeWord);
         buttonQuitWordScrapes.SetActive(game == Config.Game.WordScrapes);
+        scrollPanelBorgleUIConfig.SetActive(game == Config.Game.Borgle);
         scrollPanelLeWordUIConfig.SetActive(game == Config.Game.LeWord);
         scrollPanelWordScrapesUIConfig.SetActive(game == Config.Game.WordScrapes);
         uiBlacklist.SetActive(false);
@@ -99,17 +103,17 @@ public class UIConfig : MonoBehaviour
     {
         if (uiWord.state == UIWord.State.Blacklist)
         {
-            Config.Blacklist.Add(uiWord.word);
+            Config.Blacklist.Add(uiWord.value);
             uiWord.SetState(UIWord.State.Miss);
         }
         else
         {
-            Config.Blacklist.Remove(uiWord.word);
+            Config.Blacklist.Remove(uiWord.value);
             uiWord.SetState(UIWord.State.Blacklist);
         }
 
         if (Config.LogPointerEvents)
-            Debug.Log($"OnClickUIWord {uiWord.word}");
+            Debug.Log($"OnClickUIWord {uiWord.value}");
     }
 
     public void OnClickMainMenu()

@@ -58,7 +58,7 @@ public class WordScrapes : MonoBehaviour
     {
         foreach (var sw in uiWords)
         {
-            if (sw.word == currentString && !wordHits.Contains(currentString))
+            if (sw.value == currentString && !wordHits.Contains(currentString))
             {
                 wordHits.Add(currentString);
                 sw.SetState(UIWord.State.Hit);
@@ -185,12 +185,13 @@ public class WordScrapes : MonoBehaviour
         foreach (string word in wordSolutions)
         {
             GameObject instance = Instantiate(prefabUIWord);
-            UIWord solutionWord = instance.GetComponent<UIWord>();
-            solutionWord.onClick = OnClickUIWord;
+            UIWord uiWord = instance.GetComponent<UIWord>();
+            uiWord.onClick = OnClickUIWord;
 
-            solutionWord.Set(word);
-            solutionWord.transform.SetParent(rectUIWords);
-            uiWords.Add(solutionWord);
+            uiWord.Set(word);
+            uiWord.SetState(Config.ShowSolutions ? UIWord.State.Default : UIWord.State.Hidden);
+            uiWord.transform.SetParent(rectUIWords);
+            uiWords.Add(uiWord);
         }
 
         float angleStep = 360f / Config.WordLength;
@@ -217,10 +218,6 @@ public class WordScrapes : MonoBehaviour
         // Logging
         if (Config.LogSolutionWords || Config.LogPermutations)
             Debug.Log($"Picked {Config.WordLengthMax} letter word: {pickedWord}");
-
-        if (Config.LogDictionary || Config.LogSolutionWords)
-            foreach (string word in Config.Blacklist)
-                Debug.Log($"Blacklisted {word}");
 
         /*
         if (UIConfig.LogPermutations)
@@ -378,17 +375,17 @@ public class WordScrapes : MonoBehaviour
     {
         if (uiWord.state == UIWord.State.Blacklist)
         {
-            Config.Blacklist.Remove(uiWord.word);
-            uiWord.SetState(wordHits.Contains(uiWord.word) ? UIWord.State.Hit : UIWord.State.Miss);
+            Config.Blacklist.Remove(uiWord.value);
+            uiWord.SetState(wordHits.Contains(uiWord.value) ? UIWord.State.Hit : UIWord.State.Miss);
         }
         else if (uiWord.state != UIWord.State.Default)
         {
-            Config.Blacklist.Add(uiWord.word);
+            Config.Blacklist.Add(uiWord.value);
             uiWord.SetState(UIWord.State.Blacklist);
         }
 
         if (Config.LogPointerEvents)
-            Debug.Log($"OnClickUIWord {uiWord.word}");
+            Debug.Log($"OnClickUIWord {uiWord.value}");
     }
 
     public void OnPointerDown(UIChar uiChar)

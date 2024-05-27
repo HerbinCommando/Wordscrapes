@@ -7,6 +7,7 @@ public class UIWord : MonoBehaviour
     public enum State
     {
         Blacklist,
+        Hidden,
         Default,
         Hit,
         Miss
@@ -16,7 +17,7 @@ public class UIWord : MonoBehaviour
 
     [NonSerialized] public Action<UIWord> onClick;
     [NonSerialized] public State state;
-    [NonSerialized] public string word;
+    [NonSerialized] public string value;
 
     public bool Hit => state == State.Hit;
 
@@ -26,16 +27,9 @@ public class UIWord : MonoBehaviour
         SetState(State.Default);
     }
 
-    public void Set(string _word)
+    public void Set(string _value)
     {
-        textWord.text = string.Empty;
-        word = _word;
-
-        if (Config.ShowSolutions)
-            textWord.text = word;
-        else
-            for (int i = 0; i < _word.Length; ++i)
-                textWord.text += '_';
+        value = _value;
     }
 
     public void SetState(State _state)
@@ -50,18 +44,27 @@ public class UIWord : MonoBehaviour
                 textWord.fontStyle |= FontStyles.Strikethrough;
                 break;
 
+            case State.Hidden:
+                textWord.color = Color.white;
+                textWord.text = string.Empty;
+
+                for (int i = 0; i < value.Length; ++i)
+                    textWord.text += '_';
+                break;
+
             case State.Default:
+                textWord.text = value;
                 textWord.color = Color.white;
                 break;
 
             case State.Hit:
                 textWord.color = Color.green;
-                textWord.text = word;
+                textWord.text = value;
                 break;
 
             case State.Miss:
                 textWord.color = Color.red;
-                textWord.text = word;
+                textWord.text = value;
                 break;
         }
     }

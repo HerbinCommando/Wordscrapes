@@ -161,8 +161,7 @@ public class LeWord : MonoBehaviour
             }
         }
 
-
-        if (enteredLockedLetters && word.Length == WordLength && Dictionary.lines.Contains(word) && !Config.Blacklist.Contains(word))
+        if (enteredLockedLetters && word.Length == WordLength && Dictionary.Contains(word))
         {
             for (int i = 0; i < WordLength; ++i)
             {
@@ -195,7 +194,6 @@ public class LeWord : MonoBehaviour
                             foreach (var uiChar in uiKeyboard.uiChars)
                                 if (uiChar.Char == solution[j])
                                     uiChar.SetState(UIChar.State.Yellow);
-
                             break;
                         }
                     }
