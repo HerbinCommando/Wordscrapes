@@ -12,7 +12,7 @@ public class GuessDistribution : MonoBehaviour
         RectTransform rectParent = transform.parent as RectTransform;
         RectTransform rectTransform = transform as RectTransform;
         float parentWidth = rectParent.rect.width;
-        float newWidth = Mathf.Min(parentWidth * 0.15f + parentWidth * pct, parentWidth);
+        float newWidth = Mathf.Min(200 + parentWidth * pct, parentWidth);
         float rightMargin = parentWidth - newWidth;
         background.color = colorDefault ? Color.grey : Color.green;
         rectTransform.offsetMax = new Vector2(-rightMargin, rectTransform.offsetMax.y);
