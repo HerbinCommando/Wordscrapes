@@ -27,6 +27,7 @@ public static class Config
     public static int GameTimeSeconds = 60;
     public const int GameTimeSecondsMax = 300;
     public const int GameTimeSecondsMin = 30;
+    public static bool HardMode = true;
     public static bool ShowSolutions = false;
     public static bool VibrateOnHighlight = false;
     public static int WordLength = 5;
@@ -40,6 +41,7 @@ public static class Config
         ControlScale = PlayerPrefs.GetFloat(nameof(ControlScale), ControlScale);
         GameTimed = PlayerPrefs.GetInt(nameof(GameTimed), 0) == 1;
         GameTimeSeconds = PlayerPrefs.GetInt(nameof(GameTimeSeconds), GameTimeSeconds);
+        HardMode = PlayerPrefs.GetInt(nameof(HardMode), 1) == 1;
         ShowSolutions = PlayerPrefs.GetInt(nameof(ShowSolutions), 0) == 1;
         VibrateOnHighlight = PlayerPrefs.GetInt(nameof(VibrateOnHighlight), 0) == 1;
         WordLength = PlayerPrefs.GetInt(nameof(WordLength), WordLength);
@@ -55,6 +57,7 @@ public static class Config
         PlayerPrefs.SetInt(nameof(ControlRadiusPx), ControlRadiusPx);
         PlayerPrefs.SetInt(nameof(GameTimed), GameTimed ? 1 : 0);
         PlayerPrefs.SetInt(nameof(GameTimeSeconds), GameTimeSeconds);
+        PlayerPrefs.SetInt(nameof(HardMode), HardMode ? 1 : 0);
         PlayerPrefs.SetInt(nameof(ShowSolutions), ShowSolutions ? 1 : 0);
         PlayerPrefs.SetInt(nameof(VibrateOnHighlight), VibrateOnHighlight ? 1 : 0);
         PlayerPrefs.SetInt(nameof(WordLength), WordLength);

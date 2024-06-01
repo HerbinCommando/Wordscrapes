@@ -15,14 +15,16 @@ public class LeWord : MonoBehaviour
     public TextMeshProUGUI textAvgSolve;
     public TextMeshProUGUI textLeWordNumber;
     public TextMeshProUGUI textSolution;
+    public TextMeshProUGUI textSubmit;
     public TextMeshProUGUI textWinPct;
     public UIBackgrounds uiBackgrounds;
     public UIConfig uiConfig;
     public GameObject uiGameOver;
     public UIKeyboard uiKeyboard;
 
-    bool[] locked = new bool[5];
-    bool[] marked = new bool[5];
+    bool[] locked = new bool[WordLength];
+    bool[] marked = new bool[WordLength];
+    bool[] softLocked = new bool[WordLength];
     string solution = string.Empty;
     string word = string.Empty;
     int wordIdx = 0;
@@ -34,10 +36,12 @@ public class LeWord : MonoBehaviour
 
         word += c.ToString();
         gameBoard[wordIdx][word.Length - 1].textChar.text = c.ToString();
+        textSubmit.text = string.Empty;
     }
 
     private void Deselect()
     {
+        textSubmit.text = string.Empty;
         word = string.Empty;
 
         foreach (var uiChar in gameBoard[wordIdx])
@@ -69,6 +73,7 @@ public class LeWord : MonoBehaviour
         }
 
         gameBoard[wordIdx][word.Length - 1].textChar.text = "_";
+        textSubmit.text = string.Empty;
 
         gameBoard[wordIdx][word.Length - 1].SetState(UIChar.State.Default);
 
@@ -77,16 +82,16 @@ public class LeWord : MonoBehaviour
 
     private void GameOver()
     {
-        ++Stats.Guesses[wordIdx];
+        ++Stats.GuessDistribution[wordIdx];
 
-        int avgSolve = Stats.Guesses.ToList().IndexOf(Stats.Guesses.Max());
-        int totalGames = Stats.Guesses.Sum();
-        textAvgSolve.text = $"{(avgSolve == WordCount ? "NS" : avgSolve)}";
+        int avgSolve = Stats.GuessDistribution.ToList().IndexOf(Stats.GuessDistribution.Max());
+        int totalGames = Stats.GuessDistribution.Sum();
+        textAvgSolve.text = $"{(avgSolve == WordCount ? "NS" : avgSolve + 1)}";
         textLeWordNumber.text = $"{totalGames}";
-        textWinPct.text = $"{Mathf.FloorToInt((float)(totalGames - Stats.Guesses[WordCount]) / totalGames * 100)}";
+        textWinPct.text = $"{Mathf.FloorToInt((float)(totalGames - Stats.GuessDistribution[WordCount]) / totalGames * 100)}";
 
-        for (int i = 0; i < Stats.Guesses.Length; ++i)
-            guessDistributions[i].Set(Stats.Guesses[i], (float)Stats.Guesses[i] / totalGames, i != avgSolve);
+        for (int i = 0; i < Stats.GuessDistribution.Length; ++i)
+            guessDistributions[i].Set(Stats.GuessDistribution[i], (float)Stats.GuessDistribution[i] / totalGames, i != avgSolve);
 
         Stats.Save();
         uiGameOver.SetActive(true);
@@ -94,16 +99,18 @@ public class LeWord : MonoBehaviour
 
     private void GameStart()
     {
+        textSubmit.text = string.Empty;
         word = string.Empty;
         wordIdx = 0;
 
         uiBackgrounds.Shuffle();
 
-        for (int i = 0; i < locked.Length; ++i)
+        for (int i = 0; i < WordLength; ++i)
+        {
             locked[i] = false;
-
-        for (int i = 0; i < marked.Length; ++i)
             marked[i] = false;
+            softLocked[i] = false;
+        }
 
         foreach (var uiChar in uiKeyboard.uiChars)
             uiChar.SetState(UIChar.State.Default);
@@ -177,12 +184,23 @@ public class LeWord : MonoBehaviour
     {
         bool enteredLockedLetters = true;
 
-        for (int i = 0; i < WordLength; ++i)
+        if (Config.HardMode)
         {
-            if (locked[i] && word[i] != solution[i])
+            for (int i = 0; i < WordLength; ++i)
             {
-                enteredLockedLetters = false;
-                break;
+                if (locked[i] && word[i] != solution[i])
+                {
+                    enteredLockedLetters = false;
+                    textSubmit.text = $"Guess must include '{solution[i]}' in place";
+                    break;
+                }
+
+                if (softLocked[i] && !word.Contains(solution[i]))
+                {
+                    enteredLockedLetters = false;
+                    textSubmit.text = $"Guess must include '{solution[i]}'";
+                    break;
+                }
             }
         }
 
@@ -194,6 +212,7 @@ public class LeWord : MonoBehaviour
                 {
                     locked[i] = true;
                     marked[i] = true;
+                    softLocked[i] = false;
 
                     gameBoard[wordIdx][i].SetState(UIChar.State.Green);
 
@@ -212,6 +231,7 @@ public class LeWord : MonoBehaviour
                         if (!marked[j] && solution[j] == gameBoard[wordIdx][i].Char)
                         {
                             marked[j] = true;
+                            softLocked[j] = true;
 
                             gameBoard[wordIdx][i].SetState(UIChar.State.Yellow);
 

@@ -21,10 +21,12 @@ public class UIConfig : MonoBehaviour
     public TextMeshProUGUI textControlRadiusPx;
     public TextMeshProUGUI textControlScale;
     public TextMeshProUGUI textGameTimeSeconds;
+    public TextMeshProUGUI textHardMode;
     public TextMeshProUGUI textWordLength;
     public Toggle toggleBorgleClassic;
     public Toggle toggleBorgleModern;
     public Toggle toggleGameTimed;
+    public Toggle toggleHardMode;
     public Toggle toggleShowSolutions;
     public Toggle toggleVibrateOnHighlight;
     public Toggle toggleVibrateOnSubmit;
@@ -53,10 +55,12 @@ public class UIConfig : MonoBehaviour
         textControlRadiusPx.text = $"CONTROL RADIUS: {Config.ControlRadiusPx}px";
         textControlScale.text = $"CONTROL SCALE: {Config.ControlScale}";
         textGameTimeSeconds.text = $"GAME TIME: {Config.GameTimeSeconds}s";
+        textHardMode.text = Config.HardMode ? "Guessed letters must be reused" : "Guessed letters do not need to be used";
         textWordLength.text = $"WORD LENGTH: {Config.WordLength}";
         toggleBorgleClassic.isOn = Config.BorgleClassic;
         toggleBorgleModern.isOn = !Config.BorgleClassic;
         toggleGameTimed.isOn = Config.GameTimed;
+        toggleHardMode.isOn = Config.HardMode;
         toggleShowSolutions.isOn = Config.ShowSolutions;
         toggleVibrateOnHighlight.isOn = Config.VibrateOnHighlight;
         toggleVibrateOnSubmit.isOn = !Config.VibrateOnHighlight;
@@ -166,6 +170,12 @@ public class UIConfig : MonoBehaviour
     public void SetGameTimed(bool _)
     {
         Config.GameTimed = toggleGameTimed.isOn;
+    }
+
+    public void SetHardMode(bool _)
+    {
+        Config.HardMode = toggleHardMode.isOn;
+        textHardMode.text = Config.HardMode ? "Guessed letters must be reused" : "Guessed letters do not need to be used";
     }
 
     public void SetShowSolutions(bool _)
