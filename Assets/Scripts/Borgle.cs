@@ -79,7 +79,7 @@ public class Borgle : MonoBehaviour
 
     private void CheckCurrentString()
     {
-        if (Dictionary.Contains(currentString))
+        if (Dictionary.Contains(currentString) && !wordHits.Contains(currentString))
         {
             GameObject instance = Instantiate(prefabUIWord);
             UIWord uiWord = instance.GetComponent<UIWord>();
@@ -89,6 +89,7 @@ public class Borgle : MonoBehaviour
             uiWord.SetState(UIWord.State.Default);
             uiWord.transform.SetParent(rectUIWords);
             uiWords.Add(uiWord);
+            wordHits.Add(currentString);
 
             Handheld.Vibrate();
         }

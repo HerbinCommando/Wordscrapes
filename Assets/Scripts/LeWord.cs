@@ -9,8 +9,13 @@ public class LeWord : MonoBehaviour
     public const int WordLength = 5;
 
     public List<List<UIChar>> gameBoard = new List<List<UIChar>>();
+    public List<GuessDistribution> guessDistributions = new List<GuessDistribution>();
+    public Transform panelStats;
     public Transform panelWords;
+    public TextMeshProUGUI textAvgSolve;
+    public TextMeshProUGUI textLeWordNumber;
     public TextMeshProUGUI textSolution;
+    public TextMeshProUGUI textWinPct;
     public UIBackgrounds uiBackgrounds;
     public UIConfig uiConfig;
     public GameObject uiGameOver;
@@ -70,6 +75,38 @@ public class LeWord : MonoBehaviour
         word = word.Substring(0, word.Length - 1);
     }
 
+    private void GameOver()
+    {
+        ++Stats.LeWordGuesses[wordIdx];
+
+        int avgSolve = Stats.LeWordGuesses.ToList().IndexOf(Stats.LeWordGuesses.Max());
+        int totalGames = Stats.LeWordGuesses.Sum();
+        textAvgSolve.text = $"{(avgSolve == WordCount ? "NS" : avgSolve)}";
+        textLeWordNumber.text = $"{totalGames}";
+        textWinPct.text = $"{Mathf.FloorToInt((float)(totalGames - Stats.LeWordGuesses[WordCount]) / totalGames * 100)}";
+
+        for (int i = 0; i < Stats.LeWordGuesses.Length; ++i)
+            guessDistributions[i].Set(Stats.LeWordGuesses[i], (float)Stats.LeWordGuesses[i] / totalGames, avgSolve == i);
+
+        /*
+         * // Get the width of the parent RectTransform
+        float parentWidth = parentRectTransform.rect.width;
+
+        // Calculate the new width based on the percentage
+        float newWidth = parentWidth * pct;
+
+        // Set the width of the RectTransform by adjusting the 'right' offset
+        rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, newWidth);
+
+        // Adjust the 'right' margin proportionally
+        float rightMargin = parentWidth - newWidth;
+        rectTransform.offsetMax = new Vector2(-rightMargin, rectTransform.offsetMax.y);
+        */
+
+        Stats.Save();
+        uiGameOver.SetActive(true);
+    }
+
     private void GameStart()
     {
         word = string.Empty;
@@ -108,6 +145,9 @@ public class LeWord : MonoBehaviour
     {
         Config.Load();
         Dictionary.Load();
+        Stats.Load();
+
+        guessDistributions = panelStats.GetComponentsInChildren<GuessDistribution>().ToList();
 
         uiGameOver.SetActive(false);
         uiKeyboard.onBackspaceDown += (_) => { DeselectOne(); };
@@ -187,7 +227,6 @@ public class LeWord : MonoBehaviour
                         if (!marked[j] && solution[j] == gameBoard[wordIdx][i].Char)
                         {
                             marked[j] = true;
-                            locked[j] = true;
 
                             gameBoard[wordIdx][i].SetState(UIChar.State.Yellow);
 
@@ -208,7 +247,7 @@ public class LeWord : MonoBehaviour
 
             if (word == solution)
             {
-                uiGameOver.SetActive(true);
+                GameOver();
 
                 return;
             }
@@ -219,7 +258,7 @@ public class LeWord : MonoBehaviour
                 marked[i] = false;
 
             if (++wordIdx == WordCount)
-                uiGameOver.SetActive(true);
+                GameOver();
             else
                 foreach (var uiChar in gameBoard[wordIdx])
                     uiChar.textChar.text = "_";
@@ -252,7 +291,9 @@ public class LeWord : MonoBehaviour
 
     public void OnClickQuitGame()
     {
-        uiGameOver.SetActive(true);
+        wordIdx = WordCount;
+
+        GameOver();
     }
 
     public void OnClickSettings()
