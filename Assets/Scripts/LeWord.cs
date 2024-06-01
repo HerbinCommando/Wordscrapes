@@ -77,31 +77,16 @@ public class LeWord : MonoBehaviour
 
     private void GameOver()
     {
-        ++Stats.LeWordGuesses[wordIdx];
+        ++Stats.Guesses[wordIdx];
 
-        int avgSolve = Stats.LeWordGuesses.ToList().IndexOf(Stats.LeWordGuesses.Max());
-        int totalGames = Stats.LeWordGuesses.Sum();
+        int avgSolve = Stats.Guesses.ToList().IndexOf(Stats.Guesses.Max());
+        int totalGames = Stats.Guesses.Sum();
         textAvgSolve.text = $"{(avgSolve == WordCount ? "NS" : avgSolve)}";
         textLeWordNumber.text = $"{totalGames}";
-        textWinPct.text = $"{Mathf.FloorToInt((float)(totalGames - Stats.LeWordGuesses[WordCount]) / totalGames * 100)}";
+        textWinPct.text = $"{Mathf.FloorToInt((float)(totalGames - Stats.Guesses[WordCount]) / totalGames * 100)}";
 
-        for (int i = 0; i < Stats.LeWordGuesses.Length; ++i)
-            guessDistributions[i].Set(Stats.LeWordGuesses[i], (float)Stats.LeWordGuesses[i] / totalGames, avgSolve == i);
-
-        /*
-         * // Get the width of the parent RectTransform
-        float parentWidth = parentRectTransform.rect.width;
-
-        // Calculate the new width based on the percentage
-        float newWidth = parentWidth * pct;
-
-        // Set the width of the RectTransform by adjusting the 'right' offset
-        rectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, newWidth);
-
-        // Adjust the 'right' margin proportionally
-        float rightMargin = parentWidth - newWidth;
-        rectTransform.offsetMax = new Vector2(-rightMargin, rectTransform.offsetMax.y);
-        */
+        for (int i = 0; i < Stats.Guesses.Length; ++i)
+            guessDistributions[i].Set(Stats.Guesses[i], (float)Stats.Guesses[i] / totalGames, i != avgSolve);
 
         Stats.Save();
         uiGameOver.SetActive(true);

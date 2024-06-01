@@ -5,7 +5,7 @@ public class Stats : MonoBehaviour
     public static int GamesPlayed;
     public static int WordsFound;
     public static int WordsTotal;
-    public static int[] LeWordGuesses = new int[7];
+    public static int[] Guesses = new int[7];
 
     public static void Load()
     {
@@ -13,12 +13,12 @@ public class Stats : MonoBehaviour
         WordsFound = PlayerPrefs.GetInt(nameof(WordsFound), 0);
         WordsTotal = PlayerPrefs.GetInt(nameof(WordsTotal), 0);
 
-        if (PlayerPrefs.HasKey(nameof(LeWordGuesses)))
+        if (PlayerPrefs.HasKey(nameof(Guesses)))
         {
-            string[] leWordGuesses = PlayerPrefs.GetString(nameof(LeWordGuesses)).Split(',');
+            string[] leWordGuesses = PlayerPrefs.GetString(nameof(Guesses)).Split(',');
 
             for (int i = 0; i < leWordGuesses.Length; ++i)
-                LeWordGuesses[i] = int.Parse(leWordGuesses[i]);
+                Guesses[i] = int.Parse(leWordGuesses[i]);
         }
     }
 
@@ -27,7 +27,7 @@ public class Stats : MonoBehaviour
         PlayerPrefs.SetInt(nameof(GamesPlayed), GamesPlayed);
         PlayerPrefs.SetInt(nameof(WordsFound), WordsFound);
         PlayerPrefs.SetInt(nameof(WordsTotal), WordsTotal);
-        PlayerPrefs.SetString(nameof(LeWordGuesses), string.Join(",", LeWordGuesses));
+        PlayerPrefs.SetString(nameof(Guesses), string.Join(",", Guesses));
 
         PlayerPrefs.Save();
     }

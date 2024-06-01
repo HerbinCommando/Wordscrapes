@@ -7,14 +7,14 @@ public class GuessDistribution : MonoBehaviour
     public Image background;
     public TextMeshProUGUI textDistribution;
 
-    public void Set(int distribution, float pct, bool color)
+    public void Set(int distribution, float pct, bool colorDefault)
     {
         RectTransform rectParent = transform.parent as RectTransform;
         RectTransform rectTransform = transform as RectTransform;
         float parentWidth = rectParent.rect.width;
-        float newWidth = parentWidth * Mathf.Max(0.12f, pct);
+        float newWidth = Mathf.Min(parentWidth * 0.15f + parentWidth * pct, parentWidth);
         float rightMargin = parentWidth - newWidth;
-        background.color = color ? Color.green : Color.grey;
+        background.color = colorDefault ? Color.grey : Color.green;
         rectTransform.offsetMax = new Vector2(-rightMargin, rectTransform.offsetMax.y);
         textDistribution.text = $"{distribution}";
     }
