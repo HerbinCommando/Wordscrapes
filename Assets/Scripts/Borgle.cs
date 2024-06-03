@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
 public class Borgle : MonoBehaviour
 {
-    public static readonly string[][] BorgleClassic = new string[][] {
+    public static readonly string[][] Classic = new string[][] {
         new string[] { "A", "A", "C", "I", "O", "T", },
         new string[] { "A", "B", "I", "L", "T", "Y", },
         new string[] { "A", "B", "J", "M", "O", "Qu", },
@@ -23,7 +24,7 @@ public class Borgle : MonoBehaviour
         new string[] { "G", "I", "L", "R", "U", "W", }
     };
 
-    public static readonly string[][] BorgleModern = new string[][] {
+    public static readonly string[][] Modern = new string[][] {
         new string[] { "A", "A", "E", "E", "G", "N" },
         new string[] { "A", "B", "B", "J", "O", "O" },
         new string[] { "A", "C", "H", "O", "P", "S" },
@@ -42,23 +43,32 @@ public class Borgle : MonoBehaviour
         new string[] { "H", "L", "N", "N", "R", "Z" }
     };
 
+    public static readonly int[] Score = new int[] {
+        0,0,0,1,1,2,3,5,11,11,11,11,11,11,11,11,11
+    };
+
     public GameObject prefabUILine;
     public GameObject prefabUIWord;
     public RectTransform rectUIChars;
     public RectTransform rectUIWords;
     public TextMeshProUGUI textCurrentString;
+    public TextMeshProUGUI textGameTime;
+    public TextMeshProUGUI textScore;
     public UIBackgrounds uiBackgrounds;
     public UIConfig uiConfig;
     public GameObject uiGameOver;
 
+    private string[][] borgle;
     private string currentString = string.Empty;
+    private float deltaTimeS = 0f;
+    private int gameTimeS = 0;
+    private int score = 0;
     private bool touchDown = false;
     private List<UIChar> uiChars = new List<UIChar>();
     private List<RectTransform> uiCharsSelected = new List<RectTransform>();
     private List<GameObject> uiLines = new List<GameObject>();
     private List<UIWord> uiWords = new List<UIWord>();
     private List<string> wordHits = new List<string>();
-    private List<string> wordSolutions = new List<string>();
 
     private void AppendCurrentString(UIChar uiChar)
     {
@@ -73,7 +83,7 @@ public class Borgle : MonoBehaviour
         if (uiCharsSelected.Count > 1)
             MakeUILine(uiCharsSelected[uiCharsSelected.Count - 2].transform as RectTransform, uiCharsSelected[uiCharsSelected.Count - 1].transform as RectTransform);
 
-        if (Config.VibrateOnHighlight && wordSolutions.Contains(currentString) && !wordHits.Contains(currentString))
+        if (Config.VibrateOnHighlight && Dictionary.Contains(currentString) && !wordHits.Contains(currentString))
             Handheld.Vibrate();
     }
 
@@ -91,7 +101,8 @@ public class Borgle : MonoBehaviour
             uiWords.Add(uiWord);
             wordHits.Add(currentString);
 
-            Handheld.Vibrate();
+            if (!Config.VibrateOnHighlight)
+                Handheld.Vibrate();
         }
 
         Deselect();
@@ -124,31 +135,62 @@ public class Borgle : MonoBehaviour
             uiLines.RemoveAt(uiLines.Count - 1);
         }
 
-        if (wordSolutions.Contains(currentString) && !wordHits.Contains(currentString))
+        if (Dictionary.Contains(currentString) && !wordHits.Contains(currentString))
             Handheld.Vibrate();
     }
 
     private void GameStart()
     {
+        borgle = Config.BorgleClassic ? Classic.Shuffle() : Modern.Shuffle();
         currentString = string.Empty;
+        deltaTimeS = 0;
+        gameTimeS = Config.BorgleTimeS;
+        score = 0;
         textCurrentString.text = string.Empty;
+        textGameTime.text = $"{Config.BorgleTimeS}";
 
         uiBackgrounds.Shuffle();
         uiCharsSelected.Clear();
         uiLines.Clear();
         uiWords.Clear();
         wordHits.Clear();
-        wordSolutions.Clear();
 
         for (int i = rectUIWords.childCount - 1; i >= 0; --i)
             Destroy(rectUIWords.GetChild(i).gameObject);
 
         for (int i = 0; i < uiChars.Count; ++i)
-            uiChars[i].textChar.text = RollDie(i);
+            uiChars[i].textChar.text = borgle[i][Random.Range(0, 6)];
     }
 
     private void GameOver()
     {
+        List<UIWord> children = uiWords.OrderBy(child => child.textWord.text.Length).ToList();
+
+        for (int i = 0; i < children.Count; ++i)
+            children[i].transform.SetSiblingIndex(i);
+
+        for (int i = children.Count - 1; i >= 0; --i)
+        {
+            score += Score[children[i].textWord.text.Length];
+
+            if (i == 0 || (children[i].textWord.text.Length != children[i - 1].textWord.text.Length))
+            {
+                GameObject instance = Instantiate(prefabUIWord);
+                UIWord uiWord = instance.GetComponent<UIWord>();
+
+                uiWord.Set($"{Score[children[i].textWord.text.Length]} pts");
+                uiWord.SetState(UIWord.State.Hit);
+                uiWord.transform.SetParent(rectUIWords);
+                uiWord.transform.SetSiblingIndex(i);
+            }
+        }
+
+        if (score > Stats.HighScore)
+            Stats.HighScore = score;
+
+        textScore.text = $"SCORE: {score} pts";
+
+        Stats.Save();
         uiGameOver.SetActive(true);
     }
 
@@ -171,14 +213,6 @@ public class Borgle : MonoBehaviour
         newImageRectTransform.SetParent(a.parent);
         newImageRectTransform.SetAsFirstSibling();
         uiLines.Add(instance);
-    }
-
-    private string RollDie(int idx)
-    {
-        if (Config.BorgleClassic)
-            return BorgleClassic[idx][Random.Range(0, 6)];
-        else
-            return BorgleModern[idx][Random.Range(0, 6)];
     }
 
     private void Start()
@@ -204,29 +238,28 @@ public class Borgle : MonoBehaviour
 
     private void Update()
     {
+        if (uiConfig.gameObject.activeSelf)
+            return;
+
+        deltaTimeS += Time.deltaTime;
+
+        if (Config.BorgleTimed && gameTimeS > 0 && deltaTimeS > 1.0f)
+        {
+            gameTimeS -= Mathf.FloorToInt(deltaTimeS);
+            deltaTimeS = 0f;
+
+            if (gameTimeS <= 0)
+                GameOver();
+        }
+
         if (textCurrentString.text != currentString)
             textCurrentString.text = currentString;
 
-        /*
-        foreach (var uiChar in uiChars)
-        {
-            if (!uiChar.Selected && Input.GetKeyDown(uiChar.KeyCode))
-            {
-                OnPointerDown(uiChar);
-                break;
-            }
-        }
-
-        if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
-            ScreenOnPointerUp();
+        if (textGameTime.text != gameTimeS.ToString())
+            textGameTime.text = gameTimeS.ToString();
 
         if (Input.GetKeyDown(KeyCode.Escape))
-            Deselect();
-
-        if (Input.GetKeyDown(KeyCode.Delete))
-            if (uiCharsSelected.Count >= 1)
-                DeselectOne(uiCharsSelected[^1].GetComponent<UIChar>());
-        */
+            OnClickSettings();
     }
 
     public void OnClickQuitGame()

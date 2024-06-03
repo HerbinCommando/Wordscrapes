@@ -2,6 +2,12 @@
 
 public class UIBackgrounds : MonoBehaviour
 {
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.B) || Input.GetKeyDown(KeyCode.Tab))
+            Shuffle();
+    }
+
     public void Shuffle()
     {
         for (int i = 0; i < transform.childCount; ++i)

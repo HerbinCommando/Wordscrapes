@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class LeWord : MonoBehaviour
 {
+    public const string RulesHardOff = "Guessed letters do not need to be used";
+    public const string RulesHardOn = "Guessed letters must be reused";
     public const int WordCount = 6;
     public const int WordLength = 5;
 
@@ -171,7 +173,7 @@ public class LeWord : MonoBehaviour
                 Append(uiChar.Char);
 
         if (Input.GetKeyDown(KeyCode.Escape))
-            Deselect();
+            OnClickSettings();
 
         if (Input.GetKeyDown(KeyCode.Delete) || Input.GetKeyDown(KeyCode.Backspace))
             DeselectOne();

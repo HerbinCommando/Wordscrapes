@@ -22,9 +22,11 @@ public class UIConfig : MonoBehaviour
     public TextMeshProUGUI textControlScale;
     public TextMeshProUGUI textGameTimeSeconds;
     public TextMeshProUGUI textHardMode;
+    public TextMeshProUGUI textHighScore;
     public TextMeshProUGUI textWordLength;
     public Toggle toggleBorgleClassic;
     public Toggle toggleBorgleModern;
+    public Toggle toggleBorgleTimed;
     public Toggle toggleGameTimed;
     public Toggle toggleHardMode;
     public Toggle toggleShowSolutions;
@@ -36,6 +38,15 @@ public class UIConfig : MonoBehaviour
     private void Start()
     {
         gameObject.SetActive(false);
+    }
+
+    private void Update()
+    {
+        if (!gameObject.activeSelf)
+            return;
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+            OnClickClose();
     }
 
     public void Activate(Config.Game game)
@@ -55,7 +66,8 @@ public class UIConfig : MonoBehaviour
         textControlRadiusPx.text = $"CONTROL RADIUS: {Config.ControlRadiusPx}px";
         textControlScale.text = $"CONTROL SCALE: {Config.ControlScale}";
         textGameTimeSeconds.text = $"GAME TIME: {Config.GameTimeSeconds}s";
-        textHardMode.text = Config.HardMode ? "Guessed letters must be reused" : "Guessed letters do not need to be used";
+        textHardMode.text = Config.HardMode ? LeWord.RulesHardOn : LeWord.RulesHardOff;
+        textHighScore.text = $"HIGH SCORE: {Stats.HighScore}";
         textWordLength.text = $"WORD LENGTH: {Config.WordLength}";
         toggleBorgleClassic.isOn = Config.BorgleClassic;
         toggleBorgleModern.isOn = !Config.BorgleClassic;
@@ -149,6 +161,11 @@ public class UIConfig : MonoBehaviour
         toggleBorgleClassic.isOn = !toggleBorgleModern.isOn;
     }
 
+    public void SetBorgleTimed(bool _)
+    {
+        Config.BorgleTimed = toggleBorgleTimed.isOn;
+    }
+
     public void SetControlRadius(int _)
     {
         Config.ControlRadiusPx = (int)sliderControlRadius.value;
@@ -175,7 +192,7 @@ public class UIConfig : MonoBehaviour
     public void SetHardMode(bool _)
     {
         Config.HardMode = toggleHardMode.isOn;
-        textHardMode.text = Config.HardMode ? "Guessed letters must be reused" : "Guessed letters do not need to be used";
+        textHardMode.text = Config.HardMode ? LeWord.RulesHardOn : LeWord.RulesHardOff;
     }
 
     public void SetShowSolutions(bool _)

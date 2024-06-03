@@ -113,7 +113,7 @@ public class WordScrapes : MonoBehaviour
         gameTimeS = Config.GameTimeSeconds;
         gridLayoutGroup.cellSize = new Vector2(32 * Config.WordLength, gridLayoutGroup.cellSize.y);
         textCurrentString.text = string.Empty;
-        textGameTime.text = Config.GameTimeSeconds.ToString();
+        textGameTime.text = $"{Config.GameTimeSeconds}";
 
         textGameTime.gameObject.SetActive(Config.GameTimed);
         uiBackgrounds.Shuffle();
@@ -329,7 +329,7 @@ public class WordScrapes : MonoBehaviour
             ScreenOnPointerUp();
 
         if (Input.GetKeyDown(KeyCode.Escape))
-            Deselect();
+            OnClickSettings();
 
         if (Input.GetKeyDown(KeyCode.Delete))
             if (uiCharsSelected.Count >= 1)

@@ -17,6 +17,8 @@ public static class Config
 
     public static List<string> Blacklist = new List<string>();
     public static bool BorgleClassic = true;
+    public static bool BorgleTimed = true;
+    public static int BorgleTimeS = 180;
     public static int ControlRadiusPx = 275;
     public const int ControlRadiusPxMax = 500;
     public const int ControlRadiusPxMin = 200;
@@ -37,6 +39,7 @@ public static class Config
     public static void Load()
     {
         BorgleClassic = PlayerPrefs.GetInt(nameof(BorgleClassic), 1) == 1;
+        BorgleTimed = PlayerPrefs.GetInt(nameof(BorgleTimed), 1) == 1;
         ControlRadiusPx = PlayerPrefs.GetInt(nameof(ControlRadiusPx), ControlRadiusPx);
         ControlScale = PlayerPrefs.GetFloat(nameof(ControlScale), ControlScale);
         GameTimed = PlayerPrefs.GetInt(nameof(GameTimed), 0) == 1;
@@ -53,6 +56,7 @@ public static class Config
     public static void Save()
     {
         PlayerPrefs.SetInt(nameof(BorgleClassic), BorgleClassic ? 1 : 0);
+        PlayerPrefs.SetInt(nameof(BorgleTimed), BorgleTimed ? 1 : 0);
         PlayerPrefs.SetFloat(nameof(ControlScale), ControlScale);
         PlayerPrefs.SetInt(nameof(ControlRadiusPx), ControlRadiusPx);
         PlayerPrefs.SetInt(nameof(GameTimed), GameTimed ? 1 : 0);
