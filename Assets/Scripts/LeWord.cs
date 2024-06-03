@@ -41,22 +41,6 @@ public class LeWord : MonoBehaviour
         textSubmit.text = string.Empty;
     }
 
-    private void Deselect()
-    {
-        textSubmit.text = string.Empty;
-        word = string.Empty;
-
-        foreach (var uiChar in gameBoard[wordIdx])
-        {
-            uiChar.textChar.text = "_";
-
-            uiChar.SetState(UIChar.State.Default);
-        }
-
-        for (int i = 0; i < marked.Length; ++i)
-            marked[i] = false;
-    }
-
     private void DeselectOne()
     {
         if (word.Length == 0)

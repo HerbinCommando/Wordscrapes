@@ -8,7 +8,7 @@ public class Borgle : MonoBehaviour
     public static readonly string[][] Classic = new string[][] {
         new string[] { "A", "A", "C", "I", "O", "T", },
         new string[] { "A", "B", "I", "L", "T", "Y", },
-        new string[] { "A", "B", "J", "M", "O", "Qu", },
+        new string[] { "A", "B", "J", "M", "O", "QU", },
         new string[] { "A", "C", "D", "E", "M", "P", },
         new string[] { "A", "C", "E", "L", "R", "S", },
         new string[] { "A", "D", "E", "N", "V", "Z", },
@@ -39,7 +39,7 @@ public class Borgle : MonoBehaviour
         new string[] { "E", "H", "R", "T", "V", "W" },
         new string[] { "E", "I", "O", "S", "S", "T" },
         new string[] { "E", "L", "R", "T", "T", "Y" },
-        new string[] { "H", "I", "M", "N", "U", "Qu" },
+        new string[] { "H", "I", "M", "N", "U", "QU" },
         new string[] { "H", "L", "N", "N", "R", "Z" }
     };
 
@@ -124,7 +124,7 @@ public class Borgle : MonoBehaviour
 
     private void DeselectOne(UIChar uiChar)
     {
-        currentString = currentString.Substring(0, currentString.Length - 1);
+        currentString = currentString.Substring(0, currentString.Length - uiChar.textChar.text.Length);
 
         uiChar.SetState(UIChar.State.Default);
         uiCharsSelected.RemoveAt(uiCharsSelected.Count - 1);
@@ -190,6 +190,7 @@ public class Borgle : MonoBehaviour
 
         textScore.text = $"SCORE: {score} pts";
 
+        Deselect();
         Stats.Save();
         uiGameOver.SetActive(true);
     }

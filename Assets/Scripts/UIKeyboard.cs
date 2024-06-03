@@ -38,9 +38,9 @@ public class UIKeyboard : MonoBehaviour
                 layoutElement.minHeight = 75;
                 layoutElement.preferredHeight = 75;
                 uiChar = instance.GetComponent<UIChar>();
+                uiChar.imageButton.raycastPadding = new Vector4(-10, -10, -10, -10);
                 uiChar.textChar.fontSize = 75;
                 uiChar.textChar.text = $"{ch}";
-
                 uiChar.onPointerDown += OnPointerDown;
 
                 uiChar.transform.SetParent(panelKeyboard.GetChild(i));
