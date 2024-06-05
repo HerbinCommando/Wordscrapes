@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Borgle : MonoBehaviour
 {
@@ -51,6 +53,7 @@ public class Borgle : MonoBehaviour
     public GameObject prefabUIWord;
     public RectTransform rectUIChars;
     public RectTransform rectUIWords;
+    public ScrollRect scrollRectUIWords;
     public TextMeshProUGUI textCurrentString;
     public TextMeshProUGUI textGameTime;
     public TextMeshProUGUI textScore;
@@ -100,6 +103,9 @@ public class Borgle : MonoBehaviour
             uiWord.transform.SetParent(rectUIWords);
             uiWords.Add(uiWord);
             wordHits.Add(currentString);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(rectUIWords);
+
+            scrollRectUIWords.horizontalNormalizedPosition = 1f;
 
             if (!Config.VibrateOnHighlight)
                 Handheld.Vibrate();
@@ -158,8 +164,13 @@ public class Borgle : MonoBehaviour
         for (int i = rectUIWords.childCount - 1; i >= 0; --i)
             Destroy(rectUIWords.GetChild(i).gameObject);
 
+        UnityEngine.Random.InitState((int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds / 3);
+
         for (int i = 0; i < uiChars.Count; ++i)
-            uiChars[i].textChar.text = borgle[i][Random.Range(0, 6)];
+        {
+            uiChars[i].textChar.text = borgle[i][UnityEngine.Random.Range(0, 6)];
+            uiChars[i].textChar.transform.rotation = Quaternion.Euler(0, 0, 90 * UnityEngine.Random.Range(0, Config.BorgledLetters ? 4 : 1));
+        }
     }
 
     private void GameOver()
@@ -188,6 +199,7 @@ public class Borgle : MonoBehaviour
         if (score > Stats.HighScore)
             Stats.HighScore = score;
 
+        scrollRectUIWords.horizontalNormalizedPosition = 0f;
         textScore.text = $"SCORE: {score} pts";
 
         Deselect();
@@ -290,7 +302,7 @@ public class Borgle : MonoBehaviour
             Config.Blacklist.Remove(uiWord.value);
             uiWord.SetState(UIWord.State.Default);
         }
-        else if (uiWord.state != UIWord.State.Default)
+        else
         {
             Config.Blacklist.Add(uiWord.value);
             uiWord.SetState(UIWord.State.Blacklist);

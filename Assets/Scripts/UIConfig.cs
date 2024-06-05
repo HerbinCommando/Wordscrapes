@@ -27,6 +27,7 @@ public class UIConfig : MonoBehaviour
     public Toggle toggleBorgleClassic;
     public Toggle toggleBorgleModern;
     public Toggle toggleBorgleTimed;
+    public Toggle toggleBorgledLetters;
     public Toggle toggleGameTimed;
     public Toggle toggleHardMode;
     public Toggle toggleShowSolutions;
@@ -71,6 +72,8 @@ public class UIConfig : MonoBehaviour
         textWordLength.text = $"WORD LENGTH: {Config.WordLength}";
         toggleBorgleClassic.isOn = Config.BorgleClassic;
         toggleBorgleModern.isOn = !Config.BorgleClassic;
+        toggleBorgleTimed.isOn = Config.BorgleTimed;
+        toggleBorgledLetters.isOn = Config.BorgledLetters;
         toggleGameTimed.isOn = Config.GameTimed;
         toggleHardMode.isOn = Config.HardMode;
         toggleShowSolutions.isOn = Config.ShowSolutions;
@@ -164,6 +167,11 @@ public class UIConfig : MonoBehaviour
     public void SetBorgleTimed(bool _)
     {
         Config.BorgleTimed = toggleBorgleTimed.isOn;
+    }
+
+    public void SetBorgledLetters(bool _)
+    {
+        Config.BorgledLetters = toggleBorgledLetters.isOn;
     }
 
     public void SetControlRadius(int _)

@@ -378,7 +378,7 @@ public class WordScrapes : MonoBehaviour
             Config.Blacklist.Remove(uiWord.value);
             uiWord.SetState(wordHits.Contains(uiWord.value) ? UIWord.State.Hit : UIWord.State.Miss);
         }
-        else if (uiWord.state != UIWord.State.Default)
+        else if (uiWord.state != UIWord.State.Hidden)
         {
             Config.Blacklist.Add(uiWord.value);
             uiWord.SetState(UIWord.State.Blacklist);
