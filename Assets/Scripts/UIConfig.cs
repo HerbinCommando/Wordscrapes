@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,20 +7,25 @@ public class UIConfig : MonoBehaviour
 {
     public GameObject buttonQuitBorgle;
     public GameObject buttonQuitLeWord;
+    public GameObject buttonQuitSudooku;
     public GameObject buttonQuitWordScrapes;
     public GameObject prefabUIWord;
     public RectTransform rectUIWords;
     public GameObject scrollPanelBorgleUIConfig;
     public GameObject scrollPanelLeWordUIConfig;
+    public GameObject scrollPanelSudookuUIConfig;
     public GameObject scrollPanelWordScrapesUIConfig;
+    public Slider sliderBlanks;
     public Slider sliderControlRadius;
     public Slider sliderControlScale;
     public Slider sliderGameTime;
     public Slider sliderWordLength;
+    public TextMeshProUGUI textBlanks;
     public TextMeshProUGUI textBorgleClassic;
     public TextMeshProUGUI textBorgleModern;
     public TextMeshProUGUI textControlRadiusPx;
     public TextMeshProUGUI textControlScale;
+    public TextMeshProUGUI textDifficulty;
     public TextMeshProUGUI textGameTimeSeconds;
     public TextMeshProUGUI textHardMode;
     public TextMeshProUGUI textHighScore;
@@ -35,6 +41,31 @@ public class UIConfig : MonoBehaviour
     public Toggle toggleVibrateOnSubmit;
     public GameObject uiBlacklist;
     public UISplashScreen uiSplashScreen;
+
+    private readonly Func<string> Difficulty = () =>
+    {
+        int difficultyStep = (Config.BlanksMax - Config.BlanksMin) / 5;
+
+        //An easy puzzle contains 35 - 45 given numbers, hardest contains 25 - 26.
+        if (Config.Blanks <= Config.BlanksMin + difficultyStep)
+        {
+            return "EASY";
+        }
+        else if (Config.Blanks <= Config.BlanksMin + 2 * difficultyStep)
+        {
+            return "MODERATE";
+        }
+        else if (Config.Blanks <= Config.BlanksMin + 3 * difficultyStep)
+        {
+            return "HARD";
+        }
+        else if (Config.Blanks <= Config.BlanksMin + 4 * difficultyStep)
+        {
+            return "TOUGH";
+        }
+        else
+            return "EXTREME";
+    };
 
     private void Start()
     {
@@ -52,6 +83,9 @@ public class UIConfig : MonoBehaviour
 
     public void Activate(Config.Game game)
     {
+        sliderBlanks.maxValue = Config.BlanksMax;
+        sliderBlanks.minValue = Config.BlanksMin;
+        sliderBlanks.value = Config.Blanks;
         sliderControlRadius.maxValue = Config.ControlRadiusPxMax;
         sliderControlRadius.minValue = Config.ControlRadiusPxMin;
         sliderControlRadius.value = Config.ControlRadiusPx;
@@ -64,8 +98,10 @@ public class UIConfig : MonoBehaviour
         sliderGameTime.maxValue = Config.GameTimeSecondsMax;
         sliderGameTime.minValue = Config.GameTimeSecondsMin;
         sliderGameTime.value = Config.GameTimeSeconds;
+        textBlanks.text = $"BLANKS: {Config.Blanks}";
         textControlRadiusPx.text = $"CONTROL RADIUS: {Config.ControlRadiusPx}px";
         textControlScale.text = $"CONTROL SCALE: {Config.ControlScale}";
+        textDifficulty.text = $"DIFFICULTY: {Difficulty()}";
         textGameTimeSeconds.text = $"GAME TIME: {Config.GameTimeSeconds}s";
         textHardMode.text = Config.HardMode ? LeWord.RulesHardOn : LeWord.RulesHardOff;
         textHighScore.text = $"HIGH SCORE: {Stats.HighScore}";
@@ -82,9 +118,11 @@ public class UIConfig : MonoBehaviour
 
         buttonQuitBorgle.SetActive(game == Config.Game.Borgle);
         buttonQuitLeWord.SetActive(game == Config.Game.LeWord);
+        buttonQuitSudooku.SetActive(game == Config.Game.Sudooku);
         buttonQuitWordScrapes.SetActive(game == Config.Game.WordScrapes);
         scrollPanelBorgleUIConfig.SetActive(game == Config.Game.Borgle);
         scrollPanelLeWordUIConfig.SetActive(game == Config.Game.LeWord);
+        scrollPanelSudookuUIConfig.SetActive(game == Config.Game.Sudooku);
         scrollPanelWordScrapesUIConfig.SetActive(game == Config.Game.WordScrapes);
         uiBlacklist.SetActive(false);
 
@@ -146,6 +184,13 @@ public class UIConfig : MonoBehaviour
     {
         gameObject.SetActive(false);
         uiSplashScreen.gameObject.SetActive(true);
+    }
+
+    public void SetBlanks(int _)
+    {
+        Config.Blanks = (int)sliderBlanks.value;
+        textBlanks.text = $"BLANKS: {Config.Blanks}";
+        textDifficulty.text = $"DIFFICULTY: {Difficulty()}";
     }
 
     public void SetBorgleClassic(bool _)

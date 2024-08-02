@@ -7,6 +7,7 @@ public static class Config
     {
         Borgle,
         LeWord,
+        Sudooku,
         WordScrapes
     }
 
@@ -16,6 +17,9 @@ public static class Config
     public static bool LogSolutionWords = false;
 
     public static List<string> Blacklist = new List<string>();
+    public static int Blanks = 54;
+    public static int BlanksMax = 55;
+    public static int BlanksMin = 36;
     public static bool BorgleClassic = true;
     public static bool BorgleTimed = true;
     public static int BorgleTimeS = 180;
@@ -39,6 +43,7 @@ public static class Config
 
     public static void Load()
     {
+        Blanks = PlayerPrefs.GetInt(nameof(Blanks), Blanks);
         BorgleClassic = PlayerPrefs.GetInt(nameof(BorgleClassic), 1) == 1;
         BorgleTimed = PlayerPrefs.GetInt(nameof(BorgleTimed), 1) == 1;
         BorgledLetters = PlayerPrefs.GetInt(nameof(BorgledLetters), 1) == 1;
@@ -57,6 +62,8 @@ public static class Config
 
     public static void Save()
     {
+        PlayerPrefs.SetString(nameof(Blacklist), string.Join(",", Blacklist.ToArray()));
+        PlayerPrefs.SetInt(nameof(Blanks), Blanks);
         PlayerPrefs.SetInt(nameof(BorgleClassic), BorgleClassic ? 1 : 0);
         PlayerPrefs.SetInt(nameof(BorgleTimed), BorgleTimed ? 1 : 0);
         PlayerPrefs.SetInt(nameof(BorgledLetters), BorgledLetters ? 1 : 0);
@@ -68,7 +75,6 @@ public static class Config
         PlayerPrefs.SetInt(nameof(ShowSolutions), ShowSolutions ? 1 : 0);
         PlayerPrefs.SetInt(nameof(VibrateOnHighlight), VibrateOnHighlight ? 1 : 0);
         PlayerPrefs.SetInt(nameof(WordLength), WordLength);
-        PlayerPrefs.SetString(nameof(Blacklist), string.Join(",", Blacklist.ToArray()));
 
         PlayerPrefs.Save();
     }

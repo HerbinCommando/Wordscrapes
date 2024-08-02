@@ -9,6 +9,7 @@ public class UIChar : MonoBehaviour
     {
         Default,
         Disabled,
+        DodgerBlue,
         Green,
         Yellow
     }
@@ -48,6 +49,22 @@ public class UIChar : MonoBehaviour
         onPointerEnter?.Invoke(this);
     }
 
+    public void SetBold(bool value)
+    {
+        if (value)
+            textChar.fontStyle |= FontStyles.Bold;
+        else
+            textChar.fontStyle &= ~FontStyles.Bold;
+    }
+
+    public void SetItalic(bool value)
+    {
+        if (value)
+            textChar.fontStyle |= FontStyles.Italic;
+        else
+            textChar.fontStyle &= ~FontStyles.Italic;
+    }
+
     public void SetState(State _state)
     {
         state = _state;
@@ -56,12 +73,16 @@ public class UIChar : MonoBehaviour
 
         switch (_state)
         {
+            case State.Default:
+                imageButton.color = new Color(1, 1, 1, 1);
+                break;
+
             case State.Disabled:
                 imageButton.color = new Color(1, 1, 1, 0.75f);
                 break;
 
-            case State.Default:
-                imageButton.color = new Color(1, 1, 1, 1);
+            case State.DodgerBlue:
+                imageButton.color = new Color(0.118f, 0.565f, 1.0f);
                 break;
 
             case State.Green:
