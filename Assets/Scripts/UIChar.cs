@@ -74,7 +74,7 @@ public class UIChar : MonoBehaviour
         switch (_state)
         {
             case State.Default:
-                imageButton.color = new Color(1, 1, 1, 1);
+                imageButton.color = Config.Palette.White;
                 break;
 
             case State.Disabled:
@@ -82,15 +82,15 @@ public class UIChar : MonoBehaviour
                 break;
 
             case State.DodgerBlue:
-                imageButton.color = new Color(0.118f, 0.565f, 1.0f);
+                imageButton.color = Config.Palette.DodgerBlue;
                 break;
 
             case State.Green:
-                imageButton.color = new Color(0, 1, 0, 1);
+                imageButton.color = Config.Palette.Green;
                 break;
 
             case State.Yellow:
-                imageButton.color = new Color(1, 1, 0, 1);
+                imageButton.color = Config.Palette.Yellow;
                 break;
         }
     }

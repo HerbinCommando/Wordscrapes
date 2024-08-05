@@ -37,9 +37,11 @@ public class UIConfig : MonoBehaviour
     public Toggle toggleGameTimed;
     public Toggle toggleHardMode;
     public Toggle toggleShowSolutions;
+    public Toggle toggleUnfetteredAllegiance;
     public Toggle toggleVibrateOnHighlight;
     public Toggle toggleVibrateOnSubmit;
     public GameObject uiBlacklist;
+    public UIRadioToggle uiRadioToggle;
     public UISplashScreen uiSplashScreen;
 
     private readonly Func<string> Difficulty = () =>
@@ -47,25 +49,17 @@ public class UIConfig : MonoBehaviour
         int difficultyStep = (Config.BlanksMax - Config.BlanksMin) / 5;
 
         //An easy puzzle contains 35 - 45 given numbers, hardest contains 25 - 26.
-        if (Config.Blanks <= Config.BlanksMin + difficultyStep)
-        {
-            return "EASY";
-        }
-        else if (Config.Blanks <= Config.BlanksMin + 2 * difficultyStep)
-        {
-            return "MODERATE";
-        }
-        else if (Config.Blanks <= Config.BlanksMin + 3 * difficultyStep)
-        {
-            return "HARD";
-        }
-        else if (Config.Blanks <= Config.BlanksMin + 4 * difficultyStep)
-        {
-            return "TOUGH";
-        }
-        else
-            return "EXTREME";
+        if (Config.Blanks <= Config.BlanksMin + difficultyStep) return "EASY";
+        else if (Config.Blanks <= Config.BlanksMin + 2 * difficultyStep) return "MODERATE";
+        else if (Config.Blanks <= Config.BlanksMin + 3 * difficultyStep) return "HARD";
+        else if (Config.Blanks <= Config.BlanksMin + 4 * difficultyStep) return "TOUGH";
+        else return "EXTREME";
     };
+
+    private void OnClickRadioToggle(int i)
+    {
+        Config.KyberColor = i;
+    }
 
     private void Start()
     {
@@ -98,10 +92,10 @@ public class UIConfig : MonoBehaviour
         sliderGameTime.maxValue = Config.GameTimeSecondsMax;
         sliderGameTime.minValue = Config.GameTimeSecondsMin;
         sliderGameTime.value = Config.GameTimeSeconds;
-        textBlanks.text = $"BLANKS: {Config.Blanks}";
+        textBlanks.text = $"YOUNGLINGS MASSACRED: {Config.Blanks}";
         textControlRadiusPx.text = $"CONTROL RADIUS: {Config.ControlRadiusPx}px";
         textControlScale.text = $"CONTROL SCALE: {Config.ControlScale}";
-        textDifficulty.text = $"DIFFICULTY: {Difficulty()}";
+        textDifficulty.text = $"MIDICHLORIAN COUNT: {Difficulty()}";
         textGameTimeSeconds.text = $"GAME TIME: {Config.GameTimeSeconds}s";
         textHardMode.text = Config.HardMode ? LeWord.RulesHardOn : LeWord.RulesHardOff;
         textHighScore.text = $"HIGH SCORE: {Stats.HighScore}";
@@ -113,9 +107,10 @@ public class UIConfig : MonoBehaviour
         toggleGameTimed.isOn = Config.GameTimed;
         toggleHardMode.isOn = Config.HardMode;
         toggleShowSolutions.isOn = Config.ShowSolutions;
+        toggleUnfetteredAllegiance.isOn = Config.UnfetteredAllegience;
         toggleVibrateOnHighlight.isOn = Config.VibrateOnHighlight;
         toggleVibrateOnSubmit.isOn = !Config.VibrateOnHighlight;
-
+        uiRadioToggle.onClickRadioToggle = OnClickRadioToggle;
         buttonQuitBorgle.SetActive(game == Config.Game.Borgle);
         buttonQuitLeWord.SetActive(game == Config.Game.LeWord);
         buttonQuitSudooku.SetActive(game == Config.Game.Sudooku);
@@ -125,6 +120,13 @@ public class UIConfig : MonoBehaviour
         scrollPanelSudookuUIConfig.SetActive(game == Config.Game.Sudooku);
         scrollPanelWordScrapesUIConfig.SetActive(game == Config.Game.WordScrapes);
         uiBlacklist.SetActive(false);
+
+        for (int i = 0; i < uiRadioToggle.toggles.Length; ++i)
+        {
+            uiRadioToggle.toggles[i].transform.GetChild(0).GetComponent<Image>().color = Config.KyberColors[i];
+
+            uiRadioToggle.toggles[i].SetIsOnWithoutNotify(i == Config.KyberColor);
+        }    
 
         gameObject.SetActive(true);
     }
@@ -140,6 +142,7 @@ public class UIConfig : MonoBehaviour
 
     public void OnClickBlacklistOpen()
     {
+        Config.Blacklist.Sort();
         uiBlacklist.SetActive(true);
 
         foreach (string word in Config.Blacklist)
@@ -189,8 +192,8 @@ public class UIConfig : MonoBehaviour
     public void SetBlanks(int _)
     {
         Config.Blanks = (int)sliderBlanks.value;
-        textBlanks.text = $"BLANKS: {Config.Blanks}";
-        textDifficulty.text = $"DIFFICULTY: {Difficulty()}";
+        textBlanks.text = $"YOUNGLINGS MASSACRED: {Config.Blanks}";
+        textDifficulty.text = $"MIDICHLORIAN COUNT: {Difficulty()}";
     }
 
     public void SetBorgleClassic(bool _)
@@ -251,6 +254,11 @@ public class UIConfig : MonoBehaviour
     public void SetShowSolutions(bool _)
     {
         Config.ShowSolutions = toggleShowSolutions.isOn;
+    }
+
+    public void SetUnfetteredAllegiance(bool _)
+    {
+        Config.UnfetteredAllegience = toggleUnfetteredAllegiance.isOn;
     }
 
     public void SetVibrateOnHighlight(bool _)

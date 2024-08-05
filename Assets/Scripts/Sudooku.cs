@@ -1,19 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 using Random = System.Random;
 
 public class Sudooku : MonoBehaviour
 {
+    public Image imageCountSudooku;
+    public Image imageNumpadDiv;
+    public RectTransform rectDividers;
+    public RectTransform rectSolutions;
     public RectTransform rectUIChars;
     public RectTransform rectUINumpad;
     public UIBackgrounds uiBackgrounds;
     public UIConfig uiConfig;
     public GameObject uiGameOver;
 
-    private int[,] solution = null;
+    private Image[] dividers = null;
     private UIChar selected = null;
+    private int[,] solution = null;
+    private List<UIChar> solutions = new List<UIChar>();
     private List<UIChar> uiChars = new List<UIChar>();
     private List<UIChar> uiNumpad = new List<UIChar>();
 
@@ -21,6 +27,14 @@ public class Sudooku : MonoBehaviour
 
     private void CheckSolved()
     {
+        int i = 0;
+
+        for (int row = 0; row < 9; ++row)
+            for (int col = 0; col < 9; ++col)
+                if (solution[row, col].ToString() != uiChars[i++].textChar.text)
+                    return;
+
+        GameOver();
     }
 
     private void GameOver()
@@ -39,6 +53,7 @@ public class Sudooku : MonoBehaviour
         List<int> cells = Enumerable.Range(0, 81).OrderBy(c => random.Next()).ToList();
 
         NumpadEnabled(false);
+        uiBackgrounds.Shuffle();
 
         for (int i = 0; i < Config.Blanks; ++i)
         {
@@ -50,14 +65,16 @@ public class Sudooku : MonoBehaviour
         }
 
         int idx = 0;
+
         for (int row = 0; row < 9; ++row)
         {
-            for (int col = 0; col < 9; ++col)
+            for (int col = 0; col < 9; ++col, ++idx)
             {
                 bool blank = solvableSudoku[row, col] == 0;
-                UIChar uiChar = uiChars[idx++];
+                UIChar uiChar = uiChars[idx];
 
                 uiChar.textChar.text = blank ? string.Empty : $"{solvableSudoku[row, col]}";
+                solutions[idx].textChar.text = $"{solution[row, col]}";
 
                 uiChar.SetItalic(!blank);
                 uiChar.SetState(UIChar.State.Default);
@@ -94,7 +111,32 @@ public class Sudooku : MonoBehaviour
         selected.SetState(UIChar.State.DodgerBlue);
     }
 
-    private void OnNumpadDown(UIChar uiChar)
+    private void OnClickErase(UIChar uiChar)
+    {
+        if (selected)
+            selected.textChar.text = string.Empty;
+    }
+
+    private void OnClickHint(UIChar uiChar)
+    {
+        List<int> cells = Enumerable.Range(0, 81).OrderBy(c => random.Next()).ToList();
+
+        for (int i = 0; i < cells.Count; ++i)
+        {
+            int idx = cells[i];
+
+            if (uiChars[idx].textChar.text == string.Empty)
+            {
+                uiChars[idx].textChar.text = solutions[idx].textChar.text;
+
+                CheckSolved();
+
+                return;
+            }
+        }
+    }
+
+    private void OnClickNumpad(UIChar uiChar)
     {
         if (selected)
             selected.textChar.text = uiChar.textChar.text;
@@ -107,21 +149,34 @@ public class Sudooku : MonoBehaviour
         Config.Load();
         Stats.Load();
 
+        dividers = rectDividers.GetComponentsInChildren<Image>();
+        UIChar[] numpadInstances = rectUINumpad.GetComponentsInChildren<UIChar>();
+        UIChar[] uiCharInstances = rectUIChars.GetComponentsInChildren<UIChar>();
+        UIChar[] uiSolutionInstances = rectSolutions.GetComponentsInChildren<UIChar>();
+
+        rectSolutions.gameObject.SetActive(false);
         uiGameOver.SetActive(false);
 
-        UIChar[] instances = rectUIChars.GetComponentsInChildren<UIChar>();
-        for (int i = 0; i < instances.Length; ++i)
-            uiChars.Add(instances[i]);
+        for (int i = 0; i < uiSolutionInstances.Length; ++i)
+            solutions.Add(uiSolutionInstances[i]);
 
-        instances = rectUINumpad.GetComponentsInChildren<UIChar>();
-        for (int i = 0; i < instances.Length; ++i)
+        for (int i = 0; i < uiCharInstances.Length; ++i)
+            uiChars.Add(uiCharInstances[i]);
+
+        for (int i = 0; i < numpadInstances.Length - 2; ++i)
         {
-            instances[i].textChar.text = $"{i + 1}";
+            numpadInstances[i].textChar.text = $"{i + 1}";
 
-            instances[i].onPointerDown += OnNumpadDown;
+            numpadInstances[i].onPointerDown += OnClickNumpad;
 
-            uiNumpad.Add(instances[i]);
+            uiNumpad.Add(numpadInstances[i]);
         }
+
+        numpadInstances[^1].onPointerDown += OnClickHint;
+        numpadInstances[^2].onPointerDown += OnClickErase;
+
+        for (int i = 0; i < dividers.Length; ++i)
+            dividers[i].color = Config.KyberColors[Config.KyberColor];
 
         GameStart();
     }
@@ -145,48 +200,45 @@ public class Sudooku : MonoBehaviour
     private int[,] GenerateSudoku()
     {
         var grid = new int[9, 9];
+
         FillGrid(grid);
+
         return grid;
     }
 
     private bool FillGrid(int[,] grid)
     {
         var cell = FindEmptyCell(grid);
+
         if (cell == null)
-        {
             return true;
-        }
 
         var (row, col) = cell.Value;
-        var numbers = Enumerable.Range(1, 9).OrderBy(n => random.Next()).ToList();
+        List<int> numbers = Enumerable.Range(1, 9).OrderBy(n => random.Next()).ToList();
 
         foreach (var number in numbers)
         {
             if (IsSafe(grid, row, col, number))
             {
                 grid[row, col] = number;
+
                 if (FillGrid(grid))
-                {
                     return true;
-                }
+
                 grid[row, col] = 0;
             }
         }
+
         return false;
     }
 
     private (int, int)? FindEmptyCell(int[,] grid)
     {
-        for (int row = 0; row < 9; row++)
-        {
-            for (int col = 0; col < 9; col++)
-            {
+        for (int row = 0; row < 9; ++row)
+            for (int col = 0; col < 9; ++col)
                 if (grid[row, col] == 0)
-                {
                     return (row, col);
-                }
-            }
-        }
+
         return null;
     }
 
@@ -197,40 +249,42 @@ public class Sudooku : MonoBehaviour
 
     private bool IsInRow(int[,] grid, int row, int num)
     {
-        for (int col = 0; col < 9; col++)
-        {
+        for (int col = 0; col < 9; ++col)
             if (grid[row, col] == num)
-            {
                 return true;
-            }
-        }
+
         return false;
     }
 
     private bool IsInCol(int[,] grid, int col, int num)
     {
-        for (int row = 0; row < 9; row++)
-        {
+        for (int row = 0; row < 9; ++row)
             if (grid[row, col] == num)
-            {
                 return true;
-            }
-        }
+
         return false;
     }
 
     private bool IsInBox(int[,] grid, int startRow, int startCol, int num)
     {
-        for (int row = 0; row < 3; row++)
-        {
-            for (int col = 0; col < 3; col++)
-            {
+        for (int row = 0; row < 3; ++row)
+            for (int col = 0; col < 3; ++col)
                 if (grid[row + startRow, col + startCol] == num)
-                {
                     return true;
-                }
-            }
-        }
+
         return false;
+    }
+
+    private void Update()
+    {
+        foreach (var img in dividers)
+            if (img.color != Config.KyberColors[Config.KyberColor])
+                img.color = Config.KyberColors[Config.KyberColor];
+
+        if (imageNumpadDiv.color != Config.KyberColors[Config.KyberColor])
+            imageNumpadDiv.color = Config.KyberColors[Config.KyberColor];
+
+        if (imageCountSudooku.isActiveAndEnabled == Config.UnfetteredAllegience)
+            imageCountSudooku.gameObject.SetActive(!Config.UnfetteredAllegience);
     }
 }
