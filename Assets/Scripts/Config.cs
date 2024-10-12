@@ -64,6 +64,7 @@ public static class Config
     public static int KyberColor = Array.IndexOf(KyberColors, Palette.WhiteKyber);
     public static bool ShowSolutions = false;
     public static bool UnfetteredAllegience = true;
+    public static string UserSelectedWord = string.Empty;
     public static bool VibrateOnHighlight = false;
     public static int WordLength = 5;
     public const int WordLengthMax = 10;

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,6 +13,7 @@ public class UIConfig : MonoBehaviour
     public GameObject buttonQuitWordScrapes;
     public GameObject prefabUIWord;
     public RectTransform rectUIWords;
+    public RectTransform rectUIWordSelect;
     public GameObject scrollPanelBorgleUIConfig;
     public GameObject scrollPanelLeWordUIConfig;
     public GameObject scrollPanelSudookuUIConfig;
@@ -43,6 +46,9 @@ public class UIConfig : MonoBehaviour
     public GameObject uiBlacklist;
     public UIRadioToggle uiRadioToggle;
     public UISplashScreen uiSplashScreen;
+    public GameObject uiWordSelect;
+
+    private UIWord uiWordSelected;
 
     private readonly Func<string> Difficulty = () =>
     {
@@ -111,6 +117,7 @@ public class UIConfig : MonoBehaviour
         toggleVibrateOnHighlight.isOn = Config.VibrateOnHighlight;
         toggleVibrateOnSubmit.isOn = !Config.VibrateOnHighlight;
         uiRadioToggle.onClickRadioToggle = OnClickRadioToggle;
+
         buttonQuitBorgle.SetActive(game == Config.Game.Borgle);
         buttonQuitLeWord.SetActive(game == Config.Game.LeWord);
         buttonQuitSudooku.SetActive(game == Config.Game.Sudooku);
@@ -120,6 +127,7 @@ public class UIConfig : MonoBehaviour
         scrollPanelSudookuUIConfig.SetActive(game == Config.Game.Sudooku);
         scrollPanelWordScrapesUIConfig.SetActive(game == Config.Game.WordScrapes);
         uiBlacklist.SetActive(false);
+        uiWordSelect.SetActive(false);
 
         for (int i = 0; i < uiRadioToggle.toggles.Length; ++i)
         {
@@ -166,6 +174,51 @@ public class UIConfig : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    public void OnClickUIWordSelectClose()
+    {
+        Config.UserSelectedWord = string.Empty;
+        uiWordSelected = null;
+
+        uiWordSelect.SetActive(false);
+
+        for (int i = rectUIWordSelect.childCount - 1; i >= 0; --i)
+            Destroy(rectUIWordSelect.GetChild(i).gameObject);
+    }
+
+    public void OnClickUIWordSelectConfirm()
+    {
+        if (uiWordSelected)
+            Config.UserSelectedWord = uiWordSelected.value;
+
+        uiWordSelected = null;
+
+        uiWordSelect.SetActive(false);
+
+        for (int i = rectUIWordSelect.childCount - 1; i >= 0; --i)
+            Destroy(rectUIWordSelect.GetChild(i).gameObject);
+    }
+
+    public void OnClickUIWordSelectOpen()
+    {
+        List<string> filteredStrings = Dictionary.lines.Where(s => s.Length == Config.WordLength).ToList();
+
+        uiWordSelect.SetActive(true);
+
+        foreach (string word in filteredStrings)
+        {
+            GameObject instance = Instantiate(prefabUIWord);
+            RectTransform rectTransform = instance.GetComponent<RectTransform>();
+            rectTransform.sizeDelta = new Vector2(600, rectTransform.sizeDelta.y);
+            UIWord solutionWord = instance.GetComponent<UIWord>();
+            solutionWord.onClick = OnClickUIWordSelect;
+            solutionWord.textWord.fontSize = 66;
+
+            solutionWord.Set(word);
+            solutionWord.SetState(UIWord.State.Miss);
+            solutionWord.transform.SetParent(rectUIWordSelect);
+        }
+    }
+
     public void OnClickUIWord(UIWord uiWord)
     {
         if (uiWord.state == UIWord.State.Blacklist)
@@ -181,6 +234,16 @@ public class UIConfig : MonoBehaviour
 
         if (Config.LogPointerEvents)
             Debug.Log($"OnClickUIWord {uiWord.value}");
+    }
+
+    public void OnClickUIWordSelect(UIWord uiWord)
+    {
+        if (uiWordSelected)
+            uiWordSelected.SetState(UIWord.State.Miss);
+
+        uiWordSelected = uiWord;
+
+        uiWordSelected.SetState(UIWord.State.Hit);
     }
 
     public void OnClickMainMenu()

@@ -137,6 +137,12 @@ public class WordScrapes : MonoBehaviour
         while (Config.Blacklist.Contains(pickedWord))
             pickedWord = filteredStrings[UnityEngine.Random.Range(0, filteredStrings.Count)];
 
+        if (!string.IsNullOrEmpty(Config.UserSelectedWord))
+        {
+            pickedWord = Config.UserSelectedWord;
+            Config.UserSelectedWord = string.Empty;
+        }
+
         //---- Ray's permutation algorithm.
         // TODO(hg): I think this was missing the permutation 'zen' in the solution word 'enzymatics'?
         Dictionary<string, int> dict2 = new Dictionary<string, int>();
@@ -336,18 +342,18 @@ public class WordScrapes : MonoBehaviour
                 DeselectOne(uiCharsSelected[^1].GetComponent<UIChar>());
     }
 
-    public void OnClickQuitGame()
-    {
-        Config.Save();
-        uiConfig.gameObject.SetActive(false);
-        GameOver();
-    }
-
     public void OnClickNewGame()
     {
         Config.Save();
         GameStart();
         uiGameOver.SetActive(false);
+    }
+
+    public void OnClickQuitGame()
+    {
+        Config.Save();
+        uiConfig.gameObject.SetActive(false);
+        GameOver();
     }
 
     public void OnClickSettings()
@@ -386,6 +392,12 @@ public class WordScrapes : MonoBehaviour
 
         if (Config.LogPointerEvents)
             Debug.Log($"OnClickUIWord {uiWord.value}");
+    }
+
+    public void OnClickUIWordSelect()
+    {
+        uiConfig.gameObject.SetActive(false);
+        GameOver();
     }
 
     public void OnPointerDown(UIChar uiChar)
